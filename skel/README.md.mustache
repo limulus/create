@@ -1,0 +1,28 @@
+# {{{packageName}}}
+
+{{{packageDescription}}}
+
+## Installation
+
+```sh
+npm install {{#packageScope}}@{{{.}}}/{{/packageScope}}{{{packageName}}}
+```
+
+## Usage
+
+```javascript
+import Class from '{{#packageScope}}@{{{.}}}/{{/packageScope}}{{{packageName}}}'
+```
+
+## API
+
+### Class
+
+#### constructor
+
+```javascript
+const obj = new Class()
+```
+
+#### obj.method()
+

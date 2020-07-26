@@ -1,0 +1,58 @@
+{
+  "name": "@limulus/create",
+  "version": "0.0.0",
+  "description": "Create a TypeScript npm package or project",
+  "main": "dist/lib/index.js",
+  "bin": "dist/bin/create.js",
+  "files": [
+    "dist",
+    "skel"
+  ],
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.build.json",
+    "clean": "del dist",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/limulus/create.git"
+  },
+  "author": {
+    "name": "Eric McCarthy",
+    "email": "eric@limulus.net",
+    "url": "https://www.limulus.net/"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/limulus/create/issues"
+  },
+  "homepage": "https://github.com/limulus/create#readme",
+  "eslintConfig": {
+    "extends": "@limulus",
+    "parserOptions": {
+      "project": "./tsconfig.json"
+    }
+  },
+  "dependencies": {
+    "@danieldietrich/copy": "^0.4.2",
+    "@sindresorhus/is": "^3.0.0",
+    "mustache": "^4.0.1",
+    "nodegit": "^0.26.5"
+  },
+  "devDependencies": {
+    "@limulus/eslint-config": "^2.1.0",
+    "@types/jest": "^26.0.4",
+    "@types/node": "^14.0.22",
+    "@types/nodegit": "^0.26.7",
+    "@types/touch": "^3.1.1",
+    "del": "^5.1.0",
+    "del-cli": "^3.0.1",
+    "eslint": "^7.5.0",
+    "jest": "^26.1.0",
+    "tempy": "^0.5.0",
+    "touch": "^3.1.0",
+    "ts-jest": "^26.1.1",
+    "typescript": "^3.9.7"
+  }
+}

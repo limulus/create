@@ -1,0 +1,35 @@
+export default class Package {
+  readonly name: string
+  readonly description: string
+
+  constructor (options: PackageOptions) {
+    this.name = options.name
+    this.description = options.description
+    this.validate()
+  }
+
+  get scope (): string {
+    const parts = this.name.match(/^@[^/]+/)
+    if (parts === null) {
+      return ''
+    } else {
+      return parts[0]
+    }
+  }
+
+  get unscopedName (): string {
+    return this.name.replace(/^@[^/]+\//, '')
+  }
+
+  private validate (): void {
+    const validPackageNameRe = /^(?:@[a-z][a-z0-9-]*\/)?[a-z][a-z0-9-]*/
+    if (!validPackageNameRe.test(this.name)) {
+      throw new Error(`${this.name}: invalid package name`)
+    }
+  }
+}
+
+interface PackageOptions {
+  name: string
+  description: string
+}
