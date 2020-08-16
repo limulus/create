@@ -1,5 +1,6 @@
+import { execFileSync, ExecFileSyncOptions } from 'child_process'
 import del from 'del'
-import Git from 'nodegit'
+import fs from 'fs'
 import path from 'path'
 import tempy from 'tempy'
 import touch from 'touch'
@@ -25,7 +26,7 @@ describe('GitRepository', () => {
     })
 
     it('should return false when repository is in non-default state', async () => {
-      fakeNonDefaultState()
+      finanlgeRepoIntoMergeState(directory)
       const repository = new GitRepository(directory)
       expect(await repository.isDefaultState()).toBe(false)
     })
@@ -38,7 +39,7 @@ describe('GitRepository', () => {
     })
 
     it('should return false when git repo is not in default state', async () => {
-      fakeNonDefaultState()
+      finanlgeRepoIntoMergeState(directory)
       const repository = new GitRepository(directory)
       expect(await repository.isClean()).toBe(false)
     })
@@ -91,14 +92,40 @@ const addFileToDirectory = (directory: string): void => {
   touch.sync(path.join(directory, 'foo.txt'))
 }
 
-const createTempGitRepo = async (): Promise<string> => {
+const createTempGitRepo = (): string => {
   const directory = tempy.directory()
-  await Git.Repository.init(directory, 0)
+  execFileSync('git', ['init', directory])
   return directory
 }
 
-const fakeNonDefaultState = (): void => {
-  jest.spyOn(Git.Repository.prototype, 'isDefaultState').mockReturnValue(false)
+const finanlgeRepoIntoMergeState = (directory: string): void => {
+  const fooTxtPath = path.join(directory, 'foo.txt')
+  const execOpts: ExecFileSyncOptions = { cwd: directory, stdio: 'pipe' }
+
+  try {
+    fs.writeFileSync(fooTxtPath, 'foo\n')
+    execFileSync('git', ['add', 'foo.txt'], execOpts)
+    execFileSync('git', ['commit', '-m', 'First commit on master'], execOpts)
+    execFileSync('git', ['checkout', '-b', 'new-branch'], execOpts)
+    fs.writeFileSync(fooTxtPath, 'bar\n')
+    execFileSync('git', ['add', 'foo.txt'], execOpts)
+    execFileSync('git', ['commit', '-m', 'First commit on new-branch'], execOpts)
+    execFileSync('git', ['checkout', 'master'], execOpts)
+    fs.writeFileSync(fooTxtPath, 'baz\n')
+    execFileSync('git', ['add', 'foo.txt'], execOpts)
+    execFileSync('git', ['commit', '-m', 'Second commit on master'], execOpts)
+  } catch (err) {
+    if (err.output !== undefined) {
+      console.error(err.output[1]?.toString())
+    }
+    throw err
+  }
+
+  try {
+    execFileSync('git', ['merge', 'new-branch'], execOpts)
+  } catch (err) {
+    // continue
+  }
 }
 
 const removeDotGitDirectory = (directory: string): void => {

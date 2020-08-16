@@ -1,5 +1,5 @@
+import { execFileSync } from 'child_process'
 import fs from 'fs'
-import Git from 'nodegit'
 import path from 'path'
 import tempy from 'tempy'
 
@@ -10,9 +10,9 @@ describe('PackageInitializer', () => {
   let pkg: Package
   let directory: string
 
-  beforeEach(async () => {
+  beforeEach(() => {
     pkg = makePackage()
-    directory = await makeGitRepo()
+    directory = makeGitRepo()
   })
 
   describe('.initialize()', () => {
@@ -32,8 +32,8 @@ const makePackage = (): Package => {
   return new Package({ name: '@limulus/zuul', description: 'There is only zuul' })
 }
 
-const makeGitRepo = async (): Promise<string> => {
+const makeGitRepo = (): string => {
   const directory = tempy.directory()
-  await Git.Repository.init(directory, 0)
+  execFileSync('git', ['init', directory])
   return directory
 }
