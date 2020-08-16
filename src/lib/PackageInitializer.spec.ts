@@ -17,13 +17,27 @@ describe('PackageInitializer', () => {
 
   describe('.initialize()', () => {
     it('should contain files copied from skel', async () => {
+      const tsConfigSrc = path.join(__dirname, '..', '..', 'skel', 'tsconfig.json')
+      const tsConfigDest = path.join(directory, 'tsconfig.json')
+      expect(fs.existsSync(tsConfigSrc)).toBe(true)
+      expect(fs.existsSync(tsConfigDest)).toBe(false)
+
       const initializer = new PackageInitializer(pkg)
       await initializer.initialize(directory)
-      const tsConfigPath = path.join(directory, 'tsconfig.json')
-      expect(fs.existsSync(tsConfigPath)).toBe(true)
+      expect(fs.existsSync(tsConfigDest)).toBe(true)
     })
 
-    it.todo('should remove .mustache extension on template files')
+    it('should remove .mustache extension on template files', async () => {
+      const readmeSrc = path.join(__dirname, '..', '..', 'skel', 'README.md.mustache')
+      const readmeDest = path.join(directory, 'README.md')
+      expect(fs.existsSync(readmeSrc)).toBe(true)
+      expect(fs.existsSync(readmeDest)).toBe(false)
+
+      const initializer = new PackageInitializer(pkg)
+      await initializer.initialize(directory)
+      expect(fs.existsSync(readmeDest)).toBe(true)
+    })
+
     it.todo('should hydrate templates with info from given Package object')
   })
 })

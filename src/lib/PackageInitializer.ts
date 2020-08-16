@@ -15,6 +15,14 @@ export default class PackageInitialzier {
     await assertGitRepositoryIsClean(directory)
 
     const src = path.resolve(__dirname, '..', '..', 'skel')
-    await copy(src, directory)
+    await copy(src, directory, {
+      rename: (source, target) => this.rename(target.path),
+    })
+  }
+
+  private rename (path: string): string | undefined {
+    if (path.endsWith('.mustache')) {
+      return path.replace(/\.mustache$/, '')
+    }
   }
 }
