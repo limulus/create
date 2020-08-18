@@ -26,7 +26,7 @@ export default class GitRepository {
   }
 
   private async statuses (): Promise<Git.StatusFile[]> {
-    return await (await this.repo()).getStatusExt()
+    return await (await this.repo()).getStatus()
   }
 }
 
