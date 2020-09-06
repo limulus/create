@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@danieldietrich/copy": "^0.4.2",
-    "@limulus/eslint-config": "^3.0.0",
+    "@limulus/eslint-config": "^3.1.0",
     "@sindresorhus/is": "^3.1.1",
     "mustache": "^4.0.1",
     "nodegit": "^0.27.0"
