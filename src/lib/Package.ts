@@ -1,6 +1,11 @@
+interface PackageOptions {
+  name: string
+  description: string
+}
+
 export default class Package {
-  readonly name: string
-  readonly description: string
+  readonly name
+  readonly description
 
   constructor (options: PackageOptions) {
     this.name = options.name
@@ -27,9 +32,4 @@ export default class Package {
       throw new Error(`${this.name}: invalid package name`)
     }
   }
-}
-
-interface PackageOptions {
-  name: string
-  description: string
 }
