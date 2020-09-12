@@ -102,28 +102,21 @@ const finanlgeRepoIntoMergeState = (directory: string): void => {
   const fooTxtPath = path.join(directory, 'foo.txt')
   const execOpts: ExecFileSyncOptions = { cwd: directory, stdio: 'pipe' }
 
-  try {
-    fs.writeFileSync(fooTxtPath, 'foo\n')
-    execFileSync('git', ['add', 'foo.txt'], execOpts)
-    execFileSync('git', ['commit', '-m', 'First commit on master'], execOpts)
-    execFileSync('git', ['checkout', '-b', 'new-branch'], execOpts)
-    fs.writeFileSync(fooTxtPath, 'bar\n')
-    execFileSync('git', ['add', 'foo.txt'], execOpts)
-    execFileSync('git', ['commit', '-m', 'First commit on new-branch'], execOpts)
-    execFileSync('git', ['checkout', 'master'], execOpts)
-    fs.writeFileSync(fooTxtPath, 'baz\n')
-    execFileSync('git', ['add', 'foo.txt'], execOpts)
-    execFileSync('git', ['commit', '-m', 'Second commit on master'], execOpts)
-  } catch (err) {
-    if (err.output !== undefined) {
-      console.error(err.output[1]?.toString())
-    }
-    throw err
-  }
+  fs.writeFileSync(fooTxtPath, 'foo\n')
+  execFileSync('git', ['add', 'foo.txt'], execOpts)
+  execFileSync('git', ['commit', '-m', 'First commit on master'], execOpts)
+  execFileSync('git', ['checkout', '-b', 'new-branch'], execOpts)
+  fs.writeFileSync(fooTxtPath, 'bar\n')
+  execFileSync('git', ['add', 'foo.txt'], execOpts)
+  execFileSync('git', ['commit', '-m', 'First commit on new-branch'], execOpts)
+  execFileSync('git', ['checkout', 'master'], execOpts)
+  fs.writeFileSync(fooTxtPath, 'baz\n')
+  execFileSync('git', ['add', 'foo.txt'], execOpts)
+  execFileSync('git', ['commit', '-m', 'Second commit on master'], execOpts)
 
   try {
     execFileSync('git', ['merge', 'new-branch'], execOpts)
-  } catch (err) {
+  } catch {
     // continue
   }
 }

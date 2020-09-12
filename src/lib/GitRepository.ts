@@ -33,7 +33,7 @@ export default class GitRepository {
 export async function assertDirectoryIsGitRepository (directory: string): Promise<void> {
   try {
     await new GitRepository(directory).isDefaultState()
-  } catch (err) {
+  } catch (err: unknown) {
     if (is.error(err)) {
       if (err.message.includes('could not find repository')) {
         throw new Error(`${directory}: must be a git repository`)
