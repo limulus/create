@@ -1,0 +1,6 @@
+{
+  "extends": "@limulus",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}
