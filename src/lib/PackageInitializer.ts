@@ -17,7 +17,7 @@ export default class PackageInitialzier {
 
     const src = path.resolve(__dirname, '..', '..', 'skel')
     await copy(src, directory, {
-      rename: (source, target) => this.rename(target.path),
+      rename: (_source, target) => this.rename(target.path),
       transform: (data, source) => this.transform(data, source.path),
     })
   }
@@ -26,6 +26,7 @@ export default class PackageInitialzier {
     if (path.endsWith('.mustache')) {
       return path.replace(/\.mustache$/, '')
     }
+    return undefined
   }
 
   private transform (data: Buffer, path: string): Buffer {

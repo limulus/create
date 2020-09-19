@@ -33,7 +33,8 @@
     "@danieldietrich/copy": "^0.4.2",
     "@sindresorhus/is": "^3.1.1",
     "mustache": "^4.0.1",
-    "nodegit": "^0.27.0"
+    "nodegit": "^0.27.0",
+    "tslib": "^2.0.1"
   },
   "devDependencies": {
     "@limulus/eslint-config": "^3.1.0",
