@@ -12,6 +12,7 @@
     "build": "npm run clean && tsc -p tsconfig.build.json",
     "clean": "del dist",
     "lint": "eslint src",
+    "prepack": "npm test && npm run build",
     "test": "jest",
     "test:watch": "jest --watch"
   },
