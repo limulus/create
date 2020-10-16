@@ -68,6 +68,13 @@ describe('assertDirectoryIsGitRepository()', () => {
         .rejects.toThrow(/must be a git repo/)
     })
   })
+
+  describe('when nodegit throws some other error', () => {
+    it('should re-throw the error', async () => {
+      await expect(assertDirectoryIsGitRepository('./nonexistent'))
+        .rejects.toThrow()
+    })
+  })
 })
 
 describe('assertGitRepositoryIsClean()', () => {

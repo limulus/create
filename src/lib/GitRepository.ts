@@ -34,10 +34,8 @@ export async function assertDirectoryIsGitRepository (directory: string): Promis
   try {
     await new GitRepository(directory).isDefaultState()
   } catch (err: unknown) {
-    if (is.error(err)) {
-      if (err.message.includes('could not find repository')) {
-        throw new Error(`${directory}: must be a git repository`)
-      }
+    if (is.error(err) && err.message.includes('could not find repository')) {
+      throw new Error(`${directory}: must be a git repository`)
     }
     throw err
   }
