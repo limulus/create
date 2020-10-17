@@ -1,6 +1,6 @@
 {
   "name": "@limulus/create",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Create a TypeScript npm package or project",
   "main": "dist/index.js",
   "bin": "dist/bin/create.js",
