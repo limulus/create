@@ -14,6 +14,7 @@ jobs:
         with:
           node-version: 12
           registry-url: https://npm.pkg.github.com/
+      - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_READ_TOKEN }}

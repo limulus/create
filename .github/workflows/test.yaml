@@ -17,11 +17,13 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
           registry-url: https://npm.pkg.github.com/
+      - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_READ_TOKEN }}
       - run: npm test
       - uses: actions/upload-artifact@v2
+        if: ${{ always() }}
         with:
           name: coverage (node v${{ matrix.node }})
           path: coverage/
