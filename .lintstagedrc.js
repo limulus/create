@@ -1,3 +1,3 @@
 module.exports = {
-  '**/*.{js,ts,tsx}': ['eslint', 'tsc --noEmit --allowJs'],
+  '*.{js,ts,tsx}': (files) => [`eslint ${files.join(' ')}`, 'tsc --noEmit'],
 }

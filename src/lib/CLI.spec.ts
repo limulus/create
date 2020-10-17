@@ -1,9 +1,8 @@
 import ProcessMock from '../mocks/ProcessMock'
 import CLI from './CLI'
-import PackageInitializer from './PackageInitializer'
 import { mocked } from 'ts-jest/utils'
 import Package from './Package'
-import PackageInitialzier from './PackageInitializer'
+import PackageInitializer from './PackageInitializer'
 
 jest.mock('./Package')
 jest.mock('./PackageInitializer')
@@ -25,7 +24,7 @@ describe('CLI', () => {
       const cli = new CLI(proc)
       await cli.run()
       const pkg = mocked(Package).mock.instances[0]
-      expect(mocked(PackageInitialzier)).toHaveBeenCalledWith(pkg)
+      expect(mocked(PackageInitializer)).toHaveBeenCalledWith(pkg)
       const pkgConstructorCall = mocked(Package).mock.calls[0]
       expect(pkgConstructorCall).toEqual([{
         name: 'name',
