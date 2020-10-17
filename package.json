@@ -38,6 +38,8 @@
     "tslib": "^2.0.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@limulus/eslint-config": "^3.1.0",
     "@types/jest": "^26.0.14",
     "@types/mustache": "^4.0.1",
@@ -47,7 +49,9 @@
     "del": "^5.1.0",
     "del-cli": "^3.0.1",
     "eslint": "^7.11.0",
+    "husky": "^4.3.0",
     "jest": "^26.5.3",
+    "lint-staged": "^10.4.1",
     "tempy": "^0.5.0",
     "touch": "^3.1.0",
     "ts-jest": "^26.4.1",
