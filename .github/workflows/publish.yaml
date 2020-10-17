@@ -14,6 +14,8 @@ jobs:
         with:
           node-version: 12
       - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GPR_READ_TOKEN}}
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
