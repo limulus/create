@@ -11,8 +11,8 @@
   "scripts": {
     "build": "del dist && tsc -p tsconfig.build.json",
     "clean": "del coverage dist",
-    "lint": "eslint .?*.js src",
-    "prepack": "npm test && npm run build",
+    "lint": "eslint .?*.js src skel",
+    "prepack": "npm run build",
     "pretest": "npm run lint",
     "test": "jest --coverage",
     "test:watch": "jest --watch"

@@ -1,10 +1,16 @@
 {
   "name": "{{#pacakge.scope}}@{{{.}}}/{{/pacakge.scope}}{{{package.name}}}",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "{{packageDescription}}",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest"
+    "build": "del dist && tsc -p tsconfig.build.json",
+    "clean": "del coverage dist",
+    "lint": "eslint .?*.js src",
+    "prepack": "npm run build",
+    "pretest": "npm run lint",
+    "test": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "repository": {
     "type": "git",
@@ -23,14 +29,21 @@
   "dependencies": {
     "tslib": "^2.0.3"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@limulus/eslint-config": "^3.1.0",
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.10",
-    "del": "^5.1.0",
     "del-cli": "^3.0.1",
     "eslint": "^7.11.0",
+    "husky": "^4.3.0",
     "jest": "^26.5.3",
+    "lint-staged": "^10.4.1",
+    "semantic-release": "^17.2.1",
     "ts-jest": "^26.4.1",
     "typescript": "^4.0.3"
   }
