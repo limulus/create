@@ -102,7 +102,7 @@ const addFileToDirectory = (directory: string): void => {
 const createTempGitRepo = (): string => {
   const directory = tempy.directory()
   execFileSync('git', ['init', directory])
-  execFileSync('git', ['checkout', '-b', 'main'], { cwd: directory })
+  execFileSync('git', ['checkout', '-b', 'main'], { cwd: directory, stdio: 'pipe' })
   return directory
 }
 
