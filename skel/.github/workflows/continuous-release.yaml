@@ -14,7 +14,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node }}
-          registry-url: https://npm.pkg.github.com/
       - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
         env:
@@ -35,7 +34,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-          registry-url: https://npm.pkg.github.com/
       - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
         env:
