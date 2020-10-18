@@ -50,6 +50,48 @@ describe('GitRepository', () => {
       expect(await repository.isClean()).toBe(false)
     })
   })
+
+  describe('.githubOwner()', () => {
+    it('should throw when orgin remote is not set', async () => {
+      const repository = new GitRepository(directory)
+      await expect(async () => await repository.githubOwner())
+        .rejects.toThrow(/remote 'origin' does not exist/i)
+    })
+
+    it('should throw if origin is not a GitHub URL', async () => {
+      const repository = new GitRepository(directory)
+      setOriginRemote(directory, 'https://example.com/foo/bar.git')
+      await expect(async () => await repository.githubOwner())
+        .rejects.toThrow(/not a github url/i)
+    })
+
+    it('should return the owner of the GitHub repo', async () => {
+      const repository = new GitRepository(directory)
+      setOriginRemote(directory, 'https://github.com/unallocate/nonexist.git')
+      expect(await repository.githubOwner()).toBe('unallocate')
+    })
+  })
+
+  describe('.githubRepoName()', () => {
+    it('should throw when orgin remote is not set', async () => {
+      const repository = new GitRepository(directory)
+      await expect(async () => await repository.githubRepoName())
+        .rejects.toThrow(/remote 'origin' does not exist/i)
+    })
+
+    it('should throw if origin is not a GitHub URL', async () => {
+      const repository = new GitRepository(directory)
+      setOriginRemote(directory, 'https://example.com/foo/bar.git')
+      await expect(async () => await repository.githubRepoName())
+        .rejects.toThrow(/not a github url/i)
+    })
+
+    it('should return the GitHub repo name', async () => {
+      const repository = new GitRepository(directory)
+      setOriginRemote(directory, 'https://github.com/unallocate/nonexist.git')
+      expect(await repository.githubRepoName()).toBe('nonexist')
+    })
+  })
 })
 
 describe('assertDirectoryIsGitRepository()', () => {
@@ -104,6 +146,10 @@ const createTempGitRepo = (): string => {
   execFileSync('git', ['init', directory])
   execFileSync('git', ['checkout', '-b', 'main'], { cwd: directory, stdio: 'pipe' })
   return directory
+}
+
+const setOriginRemote = (directory: string, url: string): void => {
+  execFileSync('git', ['remote', 'add', 'origin', url], { cwd: directory, stdio: 'pipe' })
 }
 
 const finanlgeRepoIntoMergeState = (directory: string): void => {

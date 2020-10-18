@@ -28,6 +28,21 @@ export default class GitRepository {
   private async statuses (): Promise<Git.StatusFile[]> {
     return await (await this.repo()).getStatus()
   }
+
+  async githubOwner (): Promise<string> {
+    const originRemote = await this.originRemote()
+    return githubOriginUrlInfo(originRemote).owner
+  }
+
+  async githubRepoName (): Promise<string> {
+    const originRemote = await this.originRemote()
+    return githubOriginUrlInfo(originRemote).repo
+  }
+
+  private async originRemote (): Promise<Git.Remote> {
+    const repo = await this.repo()
+    return await repo.getRemote('origin')
+  }
 }
 
 export async function assertDirectoryIsGitRepository (directory: string): Promise<void> {
@@ -46,4 +61,13 @@ export async function assertGitRepositoryIsClean (directory: string): Promise<vo
   if (await repository.isDirty()) {
     throw new Error(`${directory}: must be clean`)
   }
+}
+
+function githubOriginUrlInfo (originRemote: Git.Remote): { owner: string, repo: string } {
+  const githubUrlRe = /^https:\/\/github.com\/([\w-]+)\/([\w-]+)\.git$/
+  const githubUrlInfo = originRemote.url().match(githubUrlRe)
+  if (githubUrlInfo === null) {
+    throw new Error(`origin url "${originRemote.url()}" is not a GitHub URL`)
+  }
+  return { owner: githubUrlInfo[1], repo: githubUrlInfo[2] }
 }
