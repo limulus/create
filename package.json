@@ -1,5 +1,5 @@
 {
-  "name": "@limulus/create",
+  "name": "@unallocate/create",
   "version": "1.0.0",
   "description": "Create a TypeScript npm package or project",
   "main": "dist/index.js",
@@ -19,18 +19,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/limulus/create.git"
+    "url": "git+https://github.com/unallocate/create.git"
   },
   "author": {
     "name": "Eric McCarthy",
-    "email": "eric@limulus.net",
-    "url": "https://www.limulus.net/"
+    "email": "eric@unallocated.com",
+    "url": "https://unallocated.com/"
   },
-  "license": "MIT",
+  "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/limulus/create/issues"
+    "url": "https://github.com/unallocate/create/issues"
   },
-  "homepage": "https://github.com/limulus/create#readme",
+  "homepage": "https://github.com/unallocate/create#readme",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

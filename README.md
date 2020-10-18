@@ -7,5 +7,5 @@ Create a TypeScript npm package or project
 From within a fresh and empty git repository:
 
 ```sh
-npm init @limulus @scope/pkgname 'A short description'
+npm init @unallocate @scope/pkgname 'A short description'
 ```
