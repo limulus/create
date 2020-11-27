@@ -13,6 +13,18 @@ export default class Package {
     this.validate()
   }
 
+  get isPrivate (): boolean {
+    return this.scope !== ''
+  }
+
+  get publishRegistry (): string {
+    return this.isPrivate ? 'https://npm.pkg.github.com' : 'https://registry.npmjs.org'
+  }
+
+  get publishTokenSecretName (): 'GITHUB_TOKEN' | 'NPM_TOKEN' {
+    return this.isPrivate ? 'GITHUB_TOKEN' : 'NPM_TOKEN'
+  }
+
   get scope (): string {
     const parts = this.name.match(/^@[^/]+/)
     if (parts === null) {

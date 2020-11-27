@@ -15,6 +15,58 @@ describe('Package', () => {
     })
   })
 
+  describe('.isPrivate', () => {
+    describe('when package has a scope', () => {
+      it('should return true', () => {
+        const pkg = makePackage('@unallocate/foo')
+        expect(pkg.isPrivate).toBe(true)
+      })
+    })
+
+    describe('when package is unscoped', () => {
+      it('should return false', () => {
+        const pkg = makePackage('foo')
+        expect(pkg.isPrivate).toBe(false)
+      })
+    })
+  })
+
+  describe('.publishRegistry', () => {
+    describe('when package is private', () => {
+      it('should return GitHub Package Registry URL', () => {
+        const pkg = makePackage('foo')
+        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
+        expect(pkg.publishRegistry).toBe('https://npm.pkg.github.com')
+      })
+    })
+
+    describe('when package is public', () => {
+      it('should return npm Registry URL', () => {
+        const pkg = makePackage('foo')
+        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
+        expect(pkg.publishRegistry).toBe('https://registry.npmjs.org')
+      })
+    })
+  })
+
+  describe('.publishTokenSecretName', () => {
+    describe('when package is private', () => {
+      it('should return `GITHUB_TOKEN`', () => {
+        const pkg = makePackage('hello')
+        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
+        expect(pkg.publishTokenSecretName).toBe('GITHUB_TOKEN')
+      })
+    })
+
+    describe('when package is public', () => {
+      it('should return `NPM_TOKEN`', () => {
+        const pkg = makePackage('hello')
+        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
+        expect(pkg.publishTokenSecretName).toBe('NPM_TOKEN')
+      })
+    })
+  })
+
   describe('.scope', () => {
     describe('when package name has a @scope prefix', () => {
       it('should return the @scope', () => {
