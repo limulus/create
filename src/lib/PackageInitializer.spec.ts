@@ -16,15 +16,19 @@ describe('PackageInitializer', () => {
   })
 
   describe('.initialize()', () => {
-    it('should contain files copied from skel', async () => {
-      const tsConfigSrc = path.join(__dirname, '..', '..', 'skel', 'tsconfig.json')
-      const tsConfigDest = path.join(directory, 'tsconfig.json')
-      expect(fs.existsSync(tsConfigSrc)).toBe(true)
-      expect(fs.existsSync(tsConfigDest)).toBe(false)
+    const files = ['tsconfig.json', 'src/index.ts', '.gitignore']
 
-      const initializer = new PackageInitializer(pkg)
-      await initializer.initialize(directory)
-      expect(fs.existsSync(tsConfigDest)).toBe(true)
+    describe.each(files)('skel/%s', (file) => {
+      it('should be copied into the repo', async () => {
+        const skelFilePath = path.join(__dirname, '..', '..', 'skel', file)
+        const destFilePath = path.join(directory, file)
+        expect(fs.existsSync(skelFilePath)).toBe(true)
+        expect(fs.existsSync(destFilePath)).toBe(false)
+
+        const initializer = new PackageInitializer(pkg)
+        await initializer.initialize(directory)
+        expect(fs.existsSync(destFilePath)).toBe(true)
+      })
     })
 
     it('should remove .mustache extension on template files', async () => {
