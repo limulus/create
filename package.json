@@ -11,7 +11,7 @@
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",
-    "clean": "del coverage dist",
+    "clean": "del *.tsbuildinfo coverage dist",
     "lint": "eslint *.js src skel",
     "prepack": "npm run build",
     "prepare": "is-ci || husky install",
