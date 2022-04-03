@@ -5,7 +5,7 @@ import path from 'path'
 import { assertDirectoryIsGitRepository, assertGitRepositoryIsClean } from './GitRepository'
 import Package from './Package'
 
-export default class PackageInitialzier {
+export default class PackageInitializier {
   constructor(readonly pkg: Package) {}
 
   async initialize(directory: string): Promise<void> {
