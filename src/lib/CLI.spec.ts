@@ -1,12 +1,15 @@
-import { mocked } from 'ts-jest/utils'
-
 import ProcessMock from '../mocks/ProcessMock'
 import CLI from './CLI'
 import Package from './Package'
 import PackageInitializer from './PackageInitializer'
 
 jest.mock('./Package')
+const MockedPackage = Package as jest.MockedClass<typeof Package>
+
 jest.mock('./PackageInitializer')
+const MockedPackageInitializer = PackageInitializer as jest.MockedClass<
+  typeof PackageInitializer
+>
 
 describe('CLI', () => {
   describe('run()', () => {
@@ -18,15 +21,15 @@ describe('CLI', () => {
     })
 
     afterEach(() => {
-      jest.restoreAllMocks()
+      jest.resetAllMocks()
     })
 
     it('should create PackageInitializer with values from args', async () => {
       const cli = new CLI(proc)
       await cli.run()
-      const pkg = mocked(Package).mock.instances[0]
-      expect(mocked(PackageInitializer)).toHaveBeenCalledWith(pkg)
-      const pkgConstructorCall = mocked(Package).mock.calls[0]
+      const pkg = MockedPackage.mock.instances[0]
+      expect(MockedPackageInitializer).toHaveBeenCalledWith(pkg)
+      const pkgConstructorCall = MockedPackage.mock.calls[0]
       expect(pkgConstructorCall).toEqual([
         {
           name: 'name',
@@ -38,9 +41,7 @@ describe('CLI', () => {
     it('should call PackageInitializer.initialize() with cwd', async () => {
       const cli = new CLI(proc)
       await cli.run()
-      expect(mocked(PackageInitializer.prototype.initialize)).toHaveBeenCalledWith(
-        'fakecwd'
-      )
+      expect(MockedPackageInitializer.prototype.initialize).toHaveBeenCalledWith('fakecwd')
     })
   })
 })
