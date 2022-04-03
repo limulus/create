@@ -10,12 +10,12 @@
   ],
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc",
     "clean": "del coverage dist",
     "lint": "eslint *.js src skel",
     "prepack": "npm run build",
     "test": "jest --coverage",
-    "tscc": "tsc --noEmit -p tsconfig.build.json",
+    "tscc": "tsc --noEmit",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc",
     "prepare": "husky install"
   },

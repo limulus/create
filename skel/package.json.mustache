@@ -4,13 +4,14 @@
   "description": "{{packageDescription}}",
   "main": "dist/index.js",
   "scripts": {
-    "build": "del dist && tsc -p tsconfig.build.json",
+    "prebuild": "npm run clean",
+    "build": "tsc",
     "clean": "del coverage dist",
-    "lint": "eslint .?*.js src",
+    "lint": "eslint *.js src",
     "prepack": "npm run build",
-    "pretest": "npm run lint",
     "test": "jest --coverage",
-    "test:watch": "jest --watch"
+    "tscc": "tsc --noEmit",
+    "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc",
   },
   "repository": {
     "type": "git",
