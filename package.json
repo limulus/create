@@ -14,7 +14,7 @@
     "clean": "del coverage dist",
     "lint": "eslint *.js src skel",
     "prepack": "npm run build",
-    "prepare": "is-ci && husky install",
+    "prepare": "is-ci || husky install",
     "test": "jest --coverage",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
