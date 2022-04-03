@@ -2,6 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   coveragePathIgnorePatterns: ['node_modules', 'mocks'],
+  coverageProvider: 'v8',
   coverageThreshold: {
     global: {
       branches: 100,
