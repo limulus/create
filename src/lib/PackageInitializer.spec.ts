@@ -46,7 +46,9 @@ describe('PackageInitializer', () => {
       const packageJsonDest = path.join(directory, 'package.json')
       const initializer = new PackageInitializer(pkg)
       await initializer.initialize(directory)
-      expect(fs.readFileSync(packageJsonDest).toString()).toMatch(/"name":\s*"@limulus\/zuul"/)
+      expect(fs.readFileSync(packageJsonDest).toString()).toMatch(
+        /"name":\s*"@limulus\/zuul"/
+      )
     })
   })
 })

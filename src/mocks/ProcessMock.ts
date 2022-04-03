@@ -10,7 +10,7 @@ export default class ProcessMock extends EventEmitter {
   readonly stdout
   readonly stderr
 
-  constructor (argv: string[]) {
+  constructor(argv: string[]) {
     super()
     this.argv = ['node', 'script.js', ...argv]
     this.env = {}
@@ -19,6 +19,8 @@ export default class ProcessMock extends EventEmitter {
     this.stderr = new PassThrough()
   }
 
-  exit (_code: number): void {}
-  cwd (): string { return process.cwd() }
+  exit(_code: number): void {}
+  cwd(): string {
+    return process.cwd()
+  }
 }

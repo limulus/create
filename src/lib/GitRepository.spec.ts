@@ -54,15 +54,17 @@ describe('GitRepository', () => {
   describe('.githubOwner()', () => {
     it('should throw when orgin remote is not set', async () => {
       const repository = new GitRepository(directory)
-      await expect(async () => await repository.githubOwner())
-        .rejects.toThrow(/remote 'origin' does not exist/i)
+      await expect(async () => await repository.githubOwner()).rejects.toThrow(
+        /remote 'origin' does not exist/i
+      )
     })
 
     it('should throw if origin is not a GitHub URL', async () => {
       const repository = new GitRepository(directory)
       setOriginRemote(directory, 'https://example.com/foo/bar.git')
-      await expect(async () => await repository.githubOwner())
-        .rejects.toThrow(/not a github url/i)
+      await expect(async () => await repository.githubOwner()).rejects.toThrow(
+        /not a github url/i
+      )
     })
 
     it('should return the owner of the GitHub repo', async () => {
@@ -75,15 +77,17 @@ describe('GitRepository', () => {
   describe('.githubRepoName()', () => {
     it('should throw when orgin remote is not set', async () => {
       const repository = new GitRepository(directory)
-      await expect(async () => await repository.githubRepoName())
-        .rejects.toThrow(/remote 'origin' does not exist/i)
+      await expect(async () => await repository.githubRepoName()).rejects.toThrow(
+        /remote 'origin' does not exist/i
+      )
     })
 
     it('should throw if origin is not a GitHub URL', async () => {
       const repository = new GitRepository(directory)
       setOriginRemote(directory, 'https://example.com/foo/bar.git')
-      await expect(async () => await repository.githubRepoName())
-        .rejects.toThrow(/not a github url/i)
+      await expect(async () => await repository.githubRepoName()).rejects.toThrow(
+        /not a github url/i
+      )
     })
 
     it('should return the GitHub repo name', async () => {
@@ -97,8 +101,7 @@ describe('GitRepository', () => {
 describe('assertDirectoryIsGitRepository()', () => {
   describe('when given directory is a valid git repo', () => {
     it('should not throw', async () => {
-      await expect(assertDirectoryIsGitRepository(directory))
-        .resolves.not.toThrow()
+      await expect(assertDirectoryIsGitRepository(directory)).resolves.not.toThrow()
     })
   })
 
@@ -106,15 +109,15 @@ describe('assertDirectoryIsGitRepository()', () => {
     beforeEach(() => removeDotGitDirectory(directory))
 
     it('should throw', async () => {
-      await expect(assertDirectoryIsGitRepository(directory))
-        .rejects.toThrow(/must be a git repo/)
+      await expect(assertDirectoryIsGitRepository(directory)).rejects.toThrow(
+        /must be a git repo/
+      )
     })
   })
 
   describe('when nodegit throws some other error', () => {
     it('should re-throw the error', async () => {
-      await expect(assertDirectoryIsGitRepository('./nonexistent'))
-        .rejects.toThrow()
+      await expect(assertDirectoryIsGitRepository('./nonexistent')).rejects.toThrow()
     })
   })
 })
@@ -122,8 +125,7 @@ describe('assertDirectoryIsGitRepository()', () => {
 describe('assertGitRepositoryIsClean()', () => {
   describe('when given directory is clean', () => {
     it('should not throw', async () => {
-      await expect(assertGitRepositoryIsClean(directory))
-        .resolves.not.toThrow()
+      await expect(assertGitRepositoryIsClean(directory)).resolves.not.toThrow()
     })
   })
 
@@ -131,8 +133,7 @@ describe('assertGitRepositoryIsClean()', () => {
     beforeEach(() => addFileToDirectory(directory))
 
     it('should throw', async () => {
-      await expect(assertGitRepositoryIsClean(directory))
-        .rejects.toThrow(/clean/)
+      await expect(assertGitRepositoryIsClean(directory)).rejects.toThrow(/clean/)
     })
   })
 })

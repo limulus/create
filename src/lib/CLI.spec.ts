@@ -1,6 +1,7 @@
+import { mocked } from 'ts-jest/utils'
+
 import ProcessMock from '../mocks/ProcessMock'
 import CLI from './CLI'
-import { mocked } from 'ts-jest/utils'
 import Package from './Package'
 import PackageInitializer from './PackageInitializer'
 
@@ -26,18 +27,20 @@ describe('CLI', () => {
       const pkg = mocked(Package).mock.instances[0]
       expect(mocked(PackageInitializer)).toHaveBeenCalledWith(pkg)
       const pkgConstructorCall = mocked(Package).mock.calls[0]
-      expect(pkgConstructorCall).toEqual([{
-        name: 'name',
-        description: 'a description',
-      }])
+      expect(pkgConstructorCall).toEqual([
+        {
+          name: 'name',
+          description: 'a description',
+        },
+      ])
     })
 
     it('should call PackageInitializer.initialize() with cwd', async () => {
       const cli = new CLI(proc)
       await cli.run()
-      expect(
-        mocked(PackageInitializer.prototype.initialize)
-      ).toHaveBeenCalledWith('fakecwd')
+      expect(mocked(PackageInitializer.prototype.initialize)).toHaveBeenCalledWith(
+        'fakecwd'
+      )
     })
   })
 })

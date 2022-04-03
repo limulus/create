@@ -1,9 +1,9 @@
 export class Example {
-  constructor () {
+  constructor() {
     this.hello()
   }
 
-  hello (): void {
+  hello(): void {
     console.log('hello world')
   }
 }

@@ -2,16 +2,13 @@ import copy from '@danieldietrich/copy'
 import mustache from 'mustache'
 import path from 'path'
 
+import { assertDirectoryIsGitRepository, assertGitRepositoryIsClean } from './GitRepository'
 import Package from './Package'
-import {
-  assertDirectoryIsGitRepository,
-  assertGitRepositoryIsClean,
-} from './GitRepository'
 
 export default class PackageInitialzier {
-  constructor (readonly pkg: Package) {}
+  constructor(readonly pkg: Package) {}
 
-  async initialize (directory: string): Promise<void> {
+  async initialize(directory: string): Promise<void> {
     await assertDirectoryIsGitRepository(directory)
     await assertGitRepositoryIsClean(directory)
 
@@ -22,18 +19,16 @@ export default class PackageInitialzier {
     })
   }
 
-  private rename (path: string): string | undefined {
+  private rename(path: string): string | undefined {
     if (path.endsWith('.mustache')) {
       return path.replace(/\.mustache$/, '')
     }
     return undefined
   }
 
-  private transform (data: Buffer, path: string): Buffer {
+  private transform(data: Buffer, path: string): Buffer {
     if (path.endsWith('.mustache')) {
-      return Buffer.from(
-        mustache.render(data.toString(), { package: this.pkg })
-      )
+      return Buffer.from(mustache.render(data.toString(), { package: this.pkg }))
     } else {
       return data
     }

@@ -1,12 +1,9 @@
 module.exports = {
-  extends: '@limulus',
-  ignorePatterns: '!.*.js',
+  extends: ['@limulus'],
   overrides: [
     {
-      files: ['*.ts', '*.tsx'],
-      parserOptions: {
-        project: './tsconfig.json',
-      },
+      files: ['*.ts', '*.tsx', '*.d.ts'],
+      parserOptions: { project: './tsconfig.json' },
     },
   ],
 }
