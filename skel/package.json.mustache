@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "{{packageDescription}}",
   "main": "dist/index.js",
+  "files": ["dist", "src"],
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsc",
@@ -35,16 +36,12 @@
     "registry": "{{ package.publishRegistry }}"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.8",
-    "@babel/preset-env": "^7.16.11",
-    "@babel/preset-react": "^7.16.7",
-    "@babel/preset-typescript": "^7.16.7",
     "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
     "@limulus/eslint-config": "^4.0.0",
+    "@swc/jest": "^0.2.20",
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.26",
-    "babel-jest": "^27.5.1",
     "concurrently": "^7.1.0",
     "del-cli": "^4.0.1",
     "eslint": "^7.18.0",
