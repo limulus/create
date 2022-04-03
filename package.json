@@ -14,10 +14,10 @@
     "clean": "del coverage dist",
     "lint": "eslint *.js src skel",
     "prepack": "npm run build",
+    "prepare": "is-ci && husky install",
     "test": "jest --coverage",
     "tscc": "tsc --noEmit",
-    "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc",
-    "prepare": "husky install"
+    "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
   },
   "repository": {
     "type": "git",
@@ -57,6 +57,7 @@
     "del-cli": "^4.0.1",
     "eslint": "^8.12.0",
     "husky": "^7.0.0",
+    "is-ci": "^3.0.1",
     "jest": "^27.5.1",
     "prettier": "^2.6.2",
     "semantic-release": "^19.0.2",
