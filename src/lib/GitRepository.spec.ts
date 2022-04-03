@@ -1,4 +1,4 @@
-import { execFileSync, ExecFileSyncOptions } from 'child_process'
+import { execFileSync } from 'child_process'
 import del from 'del'
 import fs from 'fs'
 import path from 'path'
@@ -144,37 +144,47 @@ const addFileToDirectory = (directory: string): void => {
 
 const createTempGitRepo = (): string => {
   const directory = tempy.directory()
-  execFileSync('git', ['init', directory])
-  execFileSync('git', ['checkout', '-b', 'main'], { cwd: directory, stdio: 'pipe' })
+  execFileSync('git', ['init', directory], { env: gitlessEnv() })
+  const execGit = makeExecGit(directory)
+  execGit('checkout', '-b', 'main')
   return directory
 }
 
 const setOriginRemote = (directory: string, url: string): void => {
-  execFileSync('git', ['remote', 'add', 'origin', url], { cwd: directory, stdio: 'pipe' })
+  const execGit = makeExecGit(directory)
+  execGit('remote', 'add', 'origin', url)
 }
 
 const finanlgeRepoIntoMergeState = (directory: string): void => {
+  const execGit = makeExecGit(directory)
   const fooTxtPath = path.join(directory, 'foo.txt')
-  const execOpts: ExecFileSyncOptions = { cwd: directory, stdio: 'pipe' }
 
   fs.writeFileSync(fooTxtPath, 'foo\n')
-  execFileSync('git', ['add', 'foo.txt'], execOpts)
-  execFileSync('git', ['commit', '-m', 'First commit on main'], execOpts)
-  execFileSync('git', ['checkout', '-b', 'new-branch'], execOpts)
+  execGit('add', 'foo.txt')
+  execGit('commit', '-m', 'First commit on main')
+  execGit('checkout', '-b', 'new-branch')
   fs.writeFileSync(fooTxtPath, 'bar\n')
-  execFileSync('git', ['add', 'foo.txt'], execOpts)
-  execFileSync('git', ['commit', '-m', 'First commit on new-branch'], execOpts)
-  execFileSync('git', ['checkout', 'main'], execOpts)
+  execGit('add', 'foo.txt')
+  execGit('commit', '-m', 'First commit on new-branch')
+  execGit('checkout', 'main')
   fs.writeFileSync(fooTxtPath, 'baz\n')
-  execFileSync('git', ['add', 'foo.txt'], execOpts)
-  execFileSync('git', ['commit', '-m', 'Second commit on main'], execOpts)
+  execGit('add', 'foo.txt')
+  execGit('commit', '-m', 'Second commit on main')
 
   try {
-    execFileSync('git', ['merge', 'new-branch'], execOpts)
+    execGit('merge', 'new-branch')
   } catch {
     // continue
   }
 }
+
+const makeExecGit =
+  (directory: string) =>
+  (...args: string[]) =>
+    execFileSync('git', args, { cwd: directory, stdio: 'pipe', env: gitlessEnv() })
+
+const gitlessEnv = () =>
+  Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_')))
 
 const removeDotGitDirectory = (directory: string): void => {
   del.sync(path.join(directory, '.git'), { force: true })
