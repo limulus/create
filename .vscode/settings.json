@@ -1,5 +1,5 @@
 {
-  "[JavaScript]": {
+  "[javascript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint"
   },
   "[javascriptreact]": {
@@ -19,5 +19,9 @@
   "editor.formatOnSave": true,
   "editor.rulers": [92],
   "editor.tabSize": 2,
-  "eslint.format.enable": true
+  "eslint.format.enable": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "typescript.tsdk": "./node_modules/typescript/lib"
 }
