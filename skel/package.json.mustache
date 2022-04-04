@@ -14,7 +14,7 @@
     "prepare": "is-ci || husky install",
     "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage",
     "tscc": "tsc --noEmit",
-    "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc",
+    "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
   },
   "repository": {
     "type": "git",
