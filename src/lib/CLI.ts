@@ -1,5 +1,5 @@
-import Package from './Package'
-import PackageInitializer from './PackageInitializer'
+import Package from './Package.js'
+import PackageInitializer from './PackageInitializer.js'
 
 interface Process extends NodeJS.EventEmitter {
   readonly argv: string[]
