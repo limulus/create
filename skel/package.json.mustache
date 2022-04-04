@@ -2,6 +2,7 @@
   "name": "{{#pacakge.scope}}@{{{.}}}/{{/pacakge.scope}}{{{package.name}}}",
   "version": "1.0.0",
   "description": "{{packageDescription}}",
+  "type": "module",
   "main": "dist/index.js",
   "files": ["dist", "src"],
   "scripts": {
@@ -11,7 +12,7 @@
     "lint": "eslint *.js src",
     "prepack": "npm run build",
     "prepare": "is-ci || husky install",
-    "test": "jest --coverage",
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc",
   },
@@ -21,8 +22,8 @@
   },
   "author": {
     "name": "Eric McCarthy",
-    "email": "eric@limuls.net",
-    "url": "https://www.limulus.net/"
+    "email": "eric@unallocated.com",
+    "url": "https://unallocated.com/"
   },
   "license": "UNLICENSED",
   "bugs": {
@@ -43,6 +44,7 @@
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.26",
     "concurrently": "^7.1.0",
+    "cross-env": "^7.0.3",
     "del-cli": "^4.0.1",
     "eslint": "^7.18.0",
     "husky": "^7.0.0",

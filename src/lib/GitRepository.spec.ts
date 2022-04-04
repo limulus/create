@@ -1,3 +1,4 @@
+import { jest } from '@jest/globals'
 import { execFileSync } from 'child_process'
 import del from 'del'
 import fs from 'fs'
@@ -8,7 +9,7 @@ import touch from 'touch'
 import GitRepository, {
   assertDirectoryIsGitRepository,
   assertGitRepositoryIsClean,
-} from './GitRepository'
+} from './GitRepository.js'
 
 let directory: string
 

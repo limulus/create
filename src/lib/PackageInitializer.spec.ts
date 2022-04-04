@@ -1,10 +1,13 @@
 import { execFileSync } from 'child_process'
 import fs from 'fs'
-import path from 'path'
+import path, { dirname } from 'path'
 import tempy from 'tempy'
+import { fileURLToPath } from 'url'
 
-import Package from './Package'
-import PackageInitializer from './PackageInitializer'
+import Package from './Package.js'
+import PackageInitializer from './PackageInitializer.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 describe('PackageInitializer', () => {
   let pkg: Package

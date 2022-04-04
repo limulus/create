@@ -1,4 +1,6 @@
-import Package from './Package'
+import { jest } from '@jest/globals'
+
+import Package from './Package.js'
 
 describe('Package', () => {
   describe('constructor()', () => {

@@ -1,35 +1,31 @@
-import ProcessMock from '../mocks/ProcessMock'
-import CLI from './CLI'
-import Package from './Package'
-import PackageInitializer from './PackageInitializer'
+import { jest } from '@jest/globals'
 
-jest.mock('./Package')
-const MockedPackage = Package as jest.MockedClass<typeof Package>
+import PackageInitializerMock from '../mocks/PackageInitializerMock.js'
+import PackageMock from '../mocks/PackageMock.js'
+import ProcessMock from '../mocks/ProcessMock.js'
+import { inject } from './CLI.js'
 
-jest.mock('./PackageInitializer')
-const MockedPackageInitializer = PackageInitializer as jest.MockedClass<
-  typeof PackageInitializer
->
+const CLI = inject({ Package: PackageMock, PackageInitializer: PackageInitializerMock })
 
 describe('CLI', () => {
   describe('run()', () => {
-    let proc: ProcessMock
+    let process: ProcessMock
 
     beforeEach(() => {
-      proc = new ProcessMock(['name', 'a description'])
-      jest.spyOn(proc, 'cwd').mockImplementation().mockReturnValue('fakecwd')
+      process = new ProcessMock(['name', 'a description'])
+      jest.spyOn(process, 'cwd').mockReturnValue('fakecwd')
     })
 
     afterEach(() => {
-      jest.resetAllMocks()
+      jest.clearAllMocks()
     })
 
     it('should create PackageInitializer with values from args', async () => {
-      const cli = new CLI(proc)
+      const cli = new CLI(process)
       await cli.run()
-      const pkg = MockedPackage.mock.instances[0]
-      expect(MockedPackageInitializer).toHaveBeenCalledWith(pkg)
-      const pkgConstructorCall = MockedPackage.mock.calls[0]
+      const pkg = PackageMock.mock.instances[0]
+      expect(PackageInitializerMock).toHaveBeenCalledWith(pkg)
+      const pkgConstructorCall = PackageMock.mock.calls[0]
       expect(pkgConstructorCall).toEqual([
         {
           name: 'name',
@@ -39,9 +35,11 @@ describe('CLI', () => {
     })
 
     it('should call PackageInitializer.initialize() with cwd', async () => {
-      const cli = new CLI(proc)
+      const cli = new CLI(process)
       await cli.run()
-      expect(MockedPackageInitializer.prototype.initialize).toHaveBeenCalledWith('fakecwd')
+      expect(PackageInitializerMock.mock.instances[0].initialize).toHaveBeenCalledWith(
+        'fakecwd'
+      )
     })
   })
 })

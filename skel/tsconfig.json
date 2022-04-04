@@ -8,7 +8,7 @@
     "isolatedModules": true,
     "incremental": true,
     "jsx": "react",
-    "module": "commonjs",
+    "module": "es2022",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,

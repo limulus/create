@@ -2,6 +2,7 @@
   "name": "@unallocate/create",
   "version": "1.0.0",
   "description": "Create a TypeScript npm package or project",
+  "type": "module",
   "main": "dist/index.js",
   "bin": "dist/bin/create.js",
   "files": [
@@ -15,7 +16,7 @@
     "lint": "eslint *.js src skel",
     "prepack": "npm run build",
     "prepare": "is-ci || husky install",
-    "test": "jest --coverage",
+    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
   },
@@ -54,6 +55,7 @@
     "@types/nodegit": "^0.27.10",
     "@types/touch": "^3.1.2",
     "concurrently": "^7.1.0",
+    "cross-env": "^7.0.3",
     "del": "^6.0.0",
     "del-cli": "^4.0.1",
     "eslint": "^8.12.0",

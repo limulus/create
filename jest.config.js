@@ -1,8 +1,4 @@
-module.exports = {
-  testEnvironment: 'node',
-  transform: {
-    '^.+\\.(t|j)sx?$': ['@swc/jest'],
-  },
+export default {
   coveragePathIgnorePatterns: ['node_modules', 'mocks'],
   coverageProvider: 'v8',
   coverageThreshold: {
@@ -13,5 +9,20 @@ module.exports = {
       statements: 100,
     },
   },
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+  testEnvironment: 'node',
   testPathIgnorePatterns: ['node_modules', 'dist'],
+  transform: {
+    '^.+\\.(t|j)sx?$': [
+      '@swc/jest',
+      {
+        jsc: {
+          target: 'es2022',
+        },
+      },
+    ],
+  },
 }

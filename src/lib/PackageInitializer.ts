@@ -1,9 +1,15 @@
 import copy from '@danieldietrich/copy'
 import mustache from 'mustache'
-import path from 'path'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
 
-import { assertDirectoryIsGitRepository, assertGitRepositoryIsClean } from './GitRepository'
-import Package from './Package'
+import {
+  assertDirectoryIsGitRepository,
+  assertGitRepositoryIsClean,
+} from './GitRepository.js'
+import Package from './Package.js'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default class PackageInitializier {
   constructor(readonly pkg: Package) {}
