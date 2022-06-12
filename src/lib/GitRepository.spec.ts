@@ -3,7 +3,7 @@ import { execFileSync } from 'child_process'
 import del from 'del'
 import fs from 'fs'
 import path from 'path'
-import tempy from 'tempy'
+import { temporaryDirectory } from 'tempy'
 import touch from 'touch'
 
 import GitRepository, {
@@ -144,7 +144,7 @@ const addFileToDirectory = (directory: string): void => {
 }
 
 const createTempGitRepo = (): string => {
-  const directory = tempy.directory()
+  const directory = temporaryDirectory()
   execFileSync('git', ['init', directory], { env: gitlessEnv() })
   const execGit = makeExecGit(directory)
   execGit('checkout', '-b', 'main')

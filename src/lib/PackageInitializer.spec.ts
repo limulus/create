@@ -1,7 +1,7 @@
 import { execFileSync } from 'child_process'
 import fs from 'fs'
 import path, { dirname } from 'path'
-import tempy from 'tempy'
+import { temporaryDirectory } from 'tempy'
 import { fileURLToPath } from 'url'
 
 import Package from './Package.js'
@@ -61,7 +61,7 @@ const makePackage = (): Package => {
 }
 
 const makeGitRepo = (): string => {
-  const directory = tempy.directory()
+  const directory = temporaryDirectory()
   execFileSync('git', ['init', directory])
   return directory
 }
