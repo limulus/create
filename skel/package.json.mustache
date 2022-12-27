@@ -12,6 +12,7 @@
     }
   },
   "files": ["dist", "src"],
+  "type": "module",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "concurrently -c auto 'npm:build:*'",
@@ -19,7 +20,6 @@
     "build:dts": "tsc --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc --incremental false --outDir dist/esm",
     "build:cjs:pkg": "mkdirp dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "build:esm:pkg": "mkdirp dist/esm && echo '{\"type\":\"module\"}' > dist/esm/package.json",
     "clean": "del *.tsbuildinfo coverage dist",
     "lint": "eslint *.js src",
     "prepack": "npm run build",
