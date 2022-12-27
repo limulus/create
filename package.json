@@ -47,7 +47,7 @@
   "devDependencies": {
     "@commitlint/cli": "^17.3.0",
     "@commitlint/config-conventional": "^17.3.0",
-    "@limulus/eslint-config": "^4.0.0",
+    "@limulus/eslint-config": "^4.1.0",
     "@swc/jest": "^0.2.24",
     "@types/jest": "^29.2.4",
     "@types/mustache": "^4.2.2",
