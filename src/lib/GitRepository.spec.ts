@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 import { execFileSync } from 'child_process'
-import del from 'del'
+import { deleteSync } from 'del'
 import fs from 'fs'
 import path from 'path'
 import { temporaryDirectory } from 'tempy'
@@ -188,5 +188,5 @@ const gitlessEnv = () =>
   Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_')))
 
 const removeDotGitDirectory = (directory: string): void => {
-  del.sync(path.join(directory, '.git'), { force: true })
+  deleteSync(path.join(directory, '.git'), { force: true })
 }
