@@ -1,9 +1,9 @@
 import { jest } from '@jest/globals'
 
+import { inject } from './CLI.js'
 import PackageInitializerMock from '../mocks/PackageInitializerMock.js'
 import PackageMock from '../mocks/PackageMock.js'
 import ProcessMock from '../mocks/ProcessMock.js'
-import { inject } from './CLI.js'
 
 const CLI = inject({ Package: PackageMock, PackageInitializer: PackageInitializerMock })
 
