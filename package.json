@@ -41,7 +41,7 @@
     "@danieldietrich/copy": "^0.4.2",
     "@sindresorhus/is": "^6.1.0",
     "mustache": "^4.2.0",
-    "nodegit": "^0.28.0-alpha.21",
+    "simple-git": "^3.20.0",
     "tslib": "^2.6.2"
   },
   "devDependencies": {

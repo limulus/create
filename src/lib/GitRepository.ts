@@ -1,32 +1,20 @@
 import is from '@sindresorhus/is'
-import Git from 'nodegit'
+import { SimpleGit, simpleGit, RemoteWithRefs } from 'simple-git'
 
 export default class GitRepository {
-  #repo?: Git.Repository
+  readonly repo: SimpleGit
 
-  constructor(readonly directory: string) {}
-
-  private async repo(): Promise<Git.Repository> {
-    this.#repo = this.#repo ?? (await Git.Repository.open(this.directory))
-    return this.#repo
+  constructor(readonly directory: string) {
+    this.repo = simpleGit(directory)
   }
 
   async isClean(): Promise<boolean> {
-    const statuses = await this.statuses()
-    const isDefaultState = await this.isDefaultState()
-    return isDefaultState && statuses.length === 0
-  }
-
-  async isDefaultState(): Promise<boolean> {
-    return (await this.repo()).isDefaultState()
+    const status = await this.repo.status()
+    return status.isClean()
   }
 
   async isDirty(): Promise<boolean> {
     return !(await this.isClean())
-  }
-
-  private async statuses(): Promise<Git.StatusFile[]> {
-    return await (await this.repo()).getStatus()
   }
 
   async githubOwner(): Promise<string> {
@@ -39,17 +27,22 @@ export default class GitRepository {
     return githubOriginUrlInfo(originRemote).repo
   }
 
-  private async originRemote(): Promise<Git.Remote> {
-    const repo = await this.repo()
-    return await repo.getRemote('origin')
+  private async originRemote() {
+    const origin = (await this.repo.getRemotes(true)).find(
+      (remote) => remote.name === 'origin'
+    )
+    if (origin === undefined) {
+      throw new Error(`remote 'origin' does not exist`)
+    }
+    return origin
   }
 }
 
 export async function assertDirectoryIsGitRepository(directory: string): Promise<void> {
   try {
-    await new GitRepository(directory).isDefaultState()
+    await simpleGit(directory).status()
   } catch (err: unknown) {
-    if (is.error(err) && err.message.includes('could not find repository')) {
+    if (is.error(err) && err.message.includes('not a git repository')) {
       throw new Error(`${directory}: must be a git repository`)
     }
     throw err
@@ -63,11 +56,14 @@ export async function assertGitRepositoryIsClean(directory: string): Promise<voi
   }
 }
 
-function githubOriginUrlInfo(originRemote: Git.Remote): { owner: string; repo: string } {
+function githubOriginUrlInfo(originRemote: RemoteWithRefs): {
+  owner: string
+  repo: string
+} {
   const githubUrlRe = /^https:\/\/github.com\/([\w-]+)\/([\w-]+)\.git$/
-  const githubUrlInfo = originRemote.url().match(githubUrlRe)
+  const githubUrlInfo = originRemote.refs.fetch.match(githubUrlRe)
   if (githubUrlInfo === null) {
-    throw new Error(`origin url "${originRemote.url()}" is not a GitHub URL`)
+    throw new Error(`origin url "${originRemote.refs.fetch}" is not a GitHub URL`)
   }
   return { owner: githubUrlInfo[1], repo: githubUrlInfo[2] }
 }

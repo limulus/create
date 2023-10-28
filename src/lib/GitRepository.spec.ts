@@ -20,19 +20,6 @@ beforeEach(async () => {
 afterEach(() => jest.restoreAllMocks())
 
 describe('GitRepository', () => {
-  describe('.isDefaultState()', () => {
-    it('should return true when repository is in default state', async () => {
-      const repository = new GitRepository(directory)
-      expect(await repository.isDefaultState()).toBe(true)
-    })
-
-    it('should return false when repository is in non-default state', async () => {
-      finanlgeRepoIntoMergeState(directory)
-      const repository = new GitRepository(directory)
-      expect(await repository.isDefaultState()).toBe(false)
-    })
-  })
-
   describe('.isClean()', () => {
     it('should return true when git repository is clean', async () => {
       const repository = new GitRepository(directory)
