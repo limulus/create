@@ -23,7 +23,7 @@
     "build:esm": "tsc --incremental false --outDir dist/esm",
     "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "clean": "del *.tsbuildinfo coverage dist",
-    "lint": "eslint *.ts src",
+    "lint": "eslint *.js src",
     "prepack": "npm run build",
     "prepare": "is-ci || husky",
     "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage",
