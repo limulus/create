@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals'
 
-import PackageInitializer from '../lib/PackageInitializer'
+import PackageInitializer from '../lib/PackageInitializer.js'
 
 const prototype = {
   initialize: jest.fn(),
