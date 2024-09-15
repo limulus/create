@@ -1,7 +1,7 @@
 {
-  "name": "{{#pacakge.scope}}@{{{.}}}/{{/pacakge.scope}}{{{package.name}}}",
+  "name": "{{{package.name}}}",
   "version": "1.0.0",
-  "description": "{{package.description}}",
+  "description": "{{{package.description}}}",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
@@ -30,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/limulus/{{package.name}}.git"
+    "url": "git+https://github.com/limulus/{{{package.name}}}.git"
   },
   "author": {
     "name": "Eric McCarthy",
@@ -39,14 +39,14 @@
   },
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/limulus/{{package.name}}/issues"
+    "url": "https://github.com/limulus/{{{package.name}}}/issues"
   },
-  "homepage": "https://github.com/limulus/{{package.name}}#readme",
+  "homepage": "https://github.com/limulus/{{{package.name}}}#readme",
   "dependencies": {
     "tslib": "^2.7.0"
   },
   "publishConfig": {
-    "registry": "{{ package.publishRegistry }}"
+    "registry": "{{{ package.publishRegistry }}}"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
