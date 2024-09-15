@@ -11,7 +11,7 @@ jobs:
     name: verify using node v${{ matrix.node }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
@@ -20,7 +20,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GPR_READ_TOKEN }}
       - run: npm run verify
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: coverage (node v${{ matrix.node }})
@@ -32,7 +32,7 @@ jobs:
     name: publish package if needed
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'npm'
