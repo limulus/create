@@ -7,8 +7,10 @@
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
+      "default": "./dist/esm/index.js",
       "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "require": "./dist/cjs/index.js",
+      "types": "./dist/types/index.d.ts"
     }
   },
   "files": ["dist", "src"],
@@ -19,11 +21,11 @@
     "build:cjs": "tsc --incremental false --module commonjs --outDir dist/cjs",
     "build:dts": "tsc --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc --incremental false --outDir dist/esm",
-    "build:cjs:pkg": "mkdirp dist/cjs && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "clean": "del *.tsbuildinfo coverage dist",
-    "lint": "eslint *.js src",
+    "lint": "eslint *.ts src",
     "prepack": "npm run build",
-    "prepare": "is-ci || husky install",
+    "prepare": "is-ci || husky",
     "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
@@ -34,8 +36,8 @@
   },
   "author": {
     "name": "Eric McCarthy",
-    "email": "eric@unallocated.com",
-    "url": "https://unallocated.com/"
+    "email": "eric@limulus.net",
+    "url": "https://limulus.net/"
   },
   "license": "UNLICENSED",
   "bugs": {
