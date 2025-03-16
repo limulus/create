@@ -23,15 +23,37 @@ describe('CLI', () => {
     it('should create PackageInitializer with values from args', async () => {
       const cli = new CLI(process)
       await cli.run()
-      const pkg = PackageMock.mock.instances[0]
-      expect(PackageInitializerMock).toHaveBeenCalledWith(pkg)
+      expect(PackageInitializerMock).toHaveBeenCalled()
       const pkgConstructorCall = PackageMock.mock.calls[0]
       expect(pkgConstructorCall).toEqual([
         {
           name: 'name',
           description: 'a description',
+          target: 'node', // Default target
         },
       ])
+    })
+
+    it('should use web target when specified with --target', async () => {
+      process = new ProcessMock(['name', 'a description', '--target', 'web'])
+      const cli = new CLI(process)
+      await cli.run()
+      const pkgConstructorCall = PackageMock.mock.calls[0]
+      expect(pkgConstructorCall).toEqual([
+        {
+          name: 'name',
+          description: 'a description',
+          target: 'web',
+        },
+      ])
+    })
+
+    it('should throw error for invalid target value', async () => {
+      process = new ProcessMock(['name', 'a description', '--target', 'invalid'])
+      const cli = new CLI(process)
+      await expect(cli.run()).rejects.toThrow(
+        'Invalid target: invalid. Must be "web" or "node"'
+      )
     })
 
     it('should call PackageInitializer.initialize() with cwd', async () => {

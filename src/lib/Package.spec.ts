@@ -15,6 +15,27 @@ describe('Package', () => {
       expect(() => makePackage('foo-bar')).not.toThrow()
       expect(() => makePackage('@foo/bar-baz')).not.toThrow()
     })
+
+    it('should default to node target when not specified', () => {
+      const pkg = makePackage('@limulus/zuul')
+      expect(pkg).toHaveProperty('target', 'node')
+    })
+
+    it('should set target when specified', () => {
+      const pkg = makePackage('@limulus/zuul', 'web')
+      expect(pkg).toHaveProperty('target', 'web')
+    })
+
+    it('should throw an error for invalid target', () => {
+      expect(
+        () =>
+          new Package({
+            name: '@limulus/zuul',
+            description: 'Test',
+            target: 'invalid' as any,
+          })
+      ).toThrow(/invalid target/)
+    })
   })
 
   describe('.isPrivate', () => {
@@ -100,11 +121,35 @@ describe('Package', () => {
       })
     })
   })
+
+  describe('.moduleConfig', () => {
+    describe('when target is node', () => {
+      it('should return NodeNext module configuration', () => {
+        const pkg = makePackage('@limulus/zuul', 'node')
+        expect(pkg.moduleConfig).toEqual({
+          module: 'NodeNext',
+          moduleResolution: 'nodenext',
+          types: ['node'],
+        })
+      })
+    })
+
+    describe('when target is web', () => {
+      it('should return ESNext module configuration', () => {
+        const pkg = makePackage('@limulus/zuul', 'web')
+        expect(pkg.moduleConfig).toEqual({
+          module: 'ESNext',
+          moduleResolution: 'bundler',
+        })
+      })
+    })
+  })
 })
 
-const makePackage = (name = '@limulus/zuul'): Package => {
+const makePackage = (name = '@limulus/zuul', target?: 'node' | 'web'): Package => {
   return new Package({
     name,
     description: 'There is only zuul',
+    target,
   })
 }

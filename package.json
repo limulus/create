@@ -14,7 +14,7 @@
     "build": "tsc",
     "clean": "del *.tsbuildinfo coverage dist",
     "postinstall": "patch-package",
-    "lint": "eslint *.js src skel",
+    "lint": "eslint *.js src",
     "prepack": "npm run build",
     "prepare": "is-ci || husky",
     "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage",

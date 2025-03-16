@@ -5,8 +5,11 @@
     "importHelpers": true,
     "isolatedModules": true,
     "jsx": "react",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
+    "module": "{{{package.moduleConfig.module}}}",
+    "moduleResolution": "{{{package.moduleConfig.moduleResolution}}}",
+{{#package.moduleConfig.types}}
+    "types": ["node"],
+{{/package.moduleConfig.types}}
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,

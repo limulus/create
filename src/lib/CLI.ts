@@ -1,4 +1,4 @@
-import Package from './Package.js'
+import Package, { PackageTarget } from './Package.js'
 import PackageInitializer from './PackageInitializer.js'
 
 interface Process extends NodeJS.EventEmitter {
@@ -20,8 +20,22 @@ export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
     }
 
     async run(): Promise<void> {
-      const [name, description] = this.arguments
-      const pkg = new Package({ name, description })
+      const args = this.arguments
+      const name = args[0]
+      const description = args[1]
+      let target: PackageTarget = 'node'
+
+      // Look for --target option
+      const targetIndex = args.indexOf('--target')
+      if (targetIndex !== -1 && targetIndex + 1 < args.length) {
+        const targetValue = args[targetIndex + 1]
+        if (targetValue !== 'web' && targetValue !== 'node') {
+          throw new Error(`Invalid target: ${targetValue}. Must be "web" or "node"`)
+        }
+        target = targetValue as PackageTarget
+      }
+
+      const pkg = new Package({ name, description, target })
       const initializer = new PackageInitializer(pkg)
       await initializer.initialize(this.process.cwd())
     }
