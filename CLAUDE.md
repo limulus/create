@@ -21,6 +21,10 @@
   - Files: PascalCase for classes, camelCase for modules
 - **Testing**: 100% coverage required (functions, branches, lines, statements)
 - **Error Handling**: Use typed errors and proper propagation
+- **Comments**:
+  - Only add comments to explain *why* code is doing something unusual or non-obvious
+  - Avoid comments that merely describe *what* the code is doing (the code already shows that)
+  - Use JSDoc for public API documentation where appropriate
 - **Project Structure**:
   - `src/lib/` - Core functionality
   - `src/bin/` - CLI entry points
