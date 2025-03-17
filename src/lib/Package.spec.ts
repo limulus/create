@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals'
+import { vi, describe, it, expect } from 'vitest'
 
 import Package from './Package.js'
 
@@ -58,7 +58,7 @@ describe('Package', () => {
     describe('when package is private', () => {
       it('should return GitHub Package Registry URL', () => {
         const pkg = makePackage('foo')
-        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
+        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
         expect(pkg.publishRegistry).toBe('https://npm.pkg.github.com')
       })
     })
@@ -66,7 +66,7 @@ describe('Package', () => {
     describe('when package is public', () => {
       it('should return npm Registry URL', () => {
         const pkg = makePackage('foo')
-        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
+        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
         expect(pkg.publishRegistry).toBe('https://registry.npmjs.org')
       })
     })
@@ -76,7 +76,7 @@ describe('Package', () => {
     describe('when package is private', () => {
       it('should return `GITHUB_TOKEN`', () => {
         const pkg = makePackage('hello')
-        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
+        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
         expect(pkg.publishTokenSecretName).toBe('GITHUB_TOKEN')
       })
     })
@@ -84,7 +84,7 @@ describe('Package', () => {
     describe('when package is public', () => {
       it('should return `NPM_TOKEN`', () => {
         const pkg = makePackage('hello')
-        jest.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
+        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
         expect(pkg.publishTokenSecretName).toBe('NPM_TOKEN')
       })
     })

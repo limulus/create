@@ -1,10 +1,10 @@
-import { jest } from '@jest/globals'
 import { execFileSync } from 'child_process'
 import { deleteSync } from 'del'
 import fs from 'fs'
 import path from 'path'
 import { temporaryDirectory } from 'tempy'
 import touch from 'touch'
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 
 import GitRepository, {
   assertDirectoryIsGitRepository,
@@ -17,7 +17,7 @@ beforeEach(async () => {
   directory = await createTempGitRepo()
 })
 
-afterEach(() => jest.restoreAllMocks())
+afterEach(() => vi.restoreAllMocks())
 
 describe('GitRepository', () => {
   describe('.isClean()', () => {

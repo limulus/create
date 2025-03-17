@@ -1,5 +1,5 @@
-import { jest } from '@jest/globals'
 import getStream from 'get-stream'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 import { inject } from './CLI.js'
 import PackageInitializerMock from '../mocks/PackageInitializerMock.js'
@@ -14,11 +14,11 @@ describe('CLI', () => {
 
     beforeEach(() => {
       process = new ProcessMock(['name', 'a description'])
-      jest.spyOn(process, 'cwd').mockReturnValue('fakecwd')
+      vi.spyOn(process, 'cwd').mockReturnValue('fakecwd')
     })
 
     afterEach(() => {
-      jest.clearAllMocks()
+      vi.clearAllMocks()
     })
 
     it('should create PackageInitializer with values from args', async () => {
@@ -67,7 +67,7 @@ describe('CLI', () => {
 
     it('should display help when --help is passed', async () => {
       process = new ProcessMock(['--help'])
-      jest.spyOn(process, 'cwd').mockReturnValue('fakecwd')
+      vi.spyOn(process, 'cwd').mockReturnValue('fakecwd')
 
       const stdoutPromise = getStream(process.stdout)
 
@@ -85,7 +85,7 @@ describe('CLI', () => {
 
     it('should display error and help when required arguments are missing', async () => {
       process = new ProcessMock([])
-      jest.spyOn(process, 'cwd').mockReturnValue('fakecwd')
+      vi.spyOn(process, 'cwd').mockReturnValue('fakecwd')
 
       const stderrPromise = getStream(process.stderr)
 

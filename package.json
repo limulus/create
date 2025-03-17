@@ -14,10 +14,10 @@
     "build": "tsc",
     "clean": "del *.tsbuildinfo coverage dist",
     "postinstall": "patch-package",
-    "lint": "eslint *.js src",
+    "lint": "eslint *.ts src",
     "prepack": "npm run build",
     "prepare": "is-ci || husky",
-    "test": "cross-env NODE_OPTIONS='--experimental-vm-modules --no-warnings' jest --coverage",
+    "test": "vitest run --coverage",
     "tscc": "tsc --noEmit",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
   },
@@ -50,12 +50,11 @@
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@limulus/eslint-config": "^5.1.0",
-    "@swc/jest": "^0.2.37",
-    "@types/jest": "^29.5.14",
     "@types/mustache": "^4.2.5",
     "@types/node": "^22.13.10",
     "@types/nodegit": "^0.28.7",
     "@types/touch": "^3.1.5",
+    "@vitest/coverage-v8": "^3.0.8",
     "concurrently": "^9.0.1",
     "cross-env": "^7.0.3",
     "del": "^7.1.0",
@@ -64,11 +63,11 @@
     "get-stream": "^9.0.1",
     "husky": "^9.1.6",
     "is-ci": "^3.0.1",
-    "jest": "^29.7.0",
     "mkdirp": "^3.0.1",
     "semantic-release": "^24.1.1",
     "tempy": "^3.1.0",
     "touch": "^3.1.1",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
   }
 }

@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { jest } from '@jest/globals'
 import { EventEmitter } from 'events'
 import { PassThrough } from 'stream'
+import { vi } from 'vitest'
 
 export default class ProcessMock extends EventEmitter {
   readonly argv: string[]
@@ -10,7 +10,7 @@ export default class ProcessMock extends EventEmitter {
   readonly stdin: PassThrough
   readonly stdout: PassThrough
   readonly stderr: PassThrough
-  exit: ReturnType<typeof jest.fn>
+  exit: ReturnType<typeof vi.fn>
 
   constructor(argv: string[]) {
     super()
@@ -19,7 +19,7 @@ export default class ProcessMock extends EventEmitter {
     this.stdin = new PassThrough()
     this.stdout = new PassThrough()
     this.stderr = new PassThrough()
-    this.exit = jest.fn().mockImplementation((code = 0) => {
+    this.exit = vi.fn().mockImplementation((code = 0) => {
       this.stdin.end()
       this.stdout.end()
       this.stderr.end()

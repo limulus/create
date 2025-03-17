@@ -3,6 +3,7 @@ import fs from 'fs'
 import path, { dirname } from 'path'
 import { temporaryDirectory } from 'tempy'
 import { fileURLToPath } from 'url'
+import { describe, it, expect, beforeEach } from 'vitest'
 
 import Package from './Package.js'
 import PackageInitializer from './PackageInitializer.js'

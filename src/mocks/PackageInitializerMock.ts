@@ -1,13 +1,11 @@
-import { jest } from '@jest/globals'
+import { vi } from 'vitest'
 
 import PackageInitializer from '../lib/PackageInitializer.js'
 
 const prototype = {
-  initialize: jest.fn(),
+  initialize: vi.fn(),
 }
-const PackageInitializerMock = jest.fn().mockImplementation(() => prototype)
+const PackageInitializerMock = vi.fn().mockImplementation(() => prototype)
 PackageInitializerMock.prototype = prototype
 
-export default PackageInitializerMock as unknown as jest.MockedClass<
-  typeof PackageInitializer
->
+export default vi.mocked(PackageInitializerMock as unknown as typeof PackageInitializer)
