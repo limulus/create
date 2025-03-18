@@ -14,7 +14,7 @@ import GitRepository, {
 let directory: string
 
 beforeEach(async () => {
-  directory = await createTempGitRepo()
+  directory = createTempGitRepo()
 })
 
 afterEach(() => vi.restoreAllMocks())
@@ -94,7 +94,9 @@ describe('assertDirectoryIsGitRepository()', () => {
   })
 
   describe('when given directory is not a git repo', () => {
-    beforeEach(() => removeDotGitDirectory(directory))
+    beforeEach(() => {
+      removeDotGitDirectory(directory)
+    })
 
     it('should throw', async () => {
       await expect(assertDirectoryIsGitRepository(directory)).rejects.toThrow(
@@ -118,7 +120,9 @@ describe('assertGitRepositoryIsClean()', () => {
   })
 
   describe('when given directory is dirty', () => {
-    beforeEach(() => addFileToDirectory(directory))
+    beforeEach(() => {
+      addFileToDirectory(directory)
+    })
 
     it('should throw', async () => {
       await expect(assertGitRepositoryIsClean(directory)).rejects.toThrow(/clean/)
