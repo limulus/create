@@ -22,7 +22,7 @@
     "build:dts": "tsc --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
     "build:esm": "tsc --incremental false --outDir dist/esm",
     "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "clean": "del *.tsbuildinfo coverage dist",
+    "clean": "del-cli *.tsbuildinfo coverage dist",
     "lint": "eslint *.ts src",
     "prepack": "npm run build",
     "prepare": "is-ci || husky",
