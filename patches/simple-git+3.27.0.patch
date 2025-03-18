@@ -33,7 +33,7 @@ index 12449c3..984c27b 100644
  export declare const gitP: SimpleGitFactory;
  
 diff --git a/node_modules/simple-git/dist/typings/response.d.ts b/node_modules/simple-git/dist/typings/response.d.ts
-index 04f825e..a7cca70 100644
+index fe3d105..460e1f7 100644
 --- a/node_modules/simple-git/dist/typings/response.d.ts
 +++ b/node_modules/simple-git/dist/typings/response.d.ts
 @@ -1,5 +1,5 @@

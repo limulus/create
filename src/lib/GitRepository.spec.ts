@@ -105,7 +105,7 @@ describe('assertDirectoryIsGitRepository()', () => {
     })
   })
 
-  describe('when nodegit throws some other error', () => {
+  describe('when git throws some other error', () => {
     it('should re-throw the error', async () => {
       await expect(assertDirectoryIsGitRepository('./nonexistent')).rejects.toThrow()
     })
