@@ -5,6 +5,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
+      include: ['src/lib/**/*.ts'],
       exclude: ['**/node_modules/**', '**/mocks/**', '**/skel/**'],
       thresholds: {
         branches: 100,
@@ -12,7 +13,6 @@ export default defineConfig({
         lines: 100,
         statements: 100,
       },
-      include: ['src/lib/**/*.ts'],
     },
     environment: 'node',
     exclude: ['**/node_modules/**', '**/dist/**'],
