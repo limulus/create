@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['html', 'json', 'text', 'text-summary'],
       include: ['src/lib/**/*.ts'],
       exclude: ['**/node_modules/**', '**/mocks/**', '**/skel/**'],
       thresholds: {
