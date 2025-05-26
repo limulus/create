@@ -16,6 +16,7 @@
 - **ESM**: Use ES Modules (`import/export` not `require()`)
 - **File Extensions**: Always include `.js` in imports (e.g., `import x from './x.js'`)
 - **Typing**: Use strict TypeScript typing, prefer interfaces for object types
+- **Semicolons**: Do not use semi-colons to end statements (rely on ASI)
 - **Naming**:
   - Classes: PascalCase
   - Methods/variables: camelCase
@@ -31,3 +32,15 @@
   - `src/bin/` - CLI entry points
   - `src/mocks/` - Test mocks
   - `skel/` - Templates used to create new packages
+
+## Tasks
+
+### Upgrading/Updating Dependencies
+
+When asked to upgrade dependencies, follow this process:
+
+1. Run `npm outdated --json` to determine which dependencies can be updated.
+2. Use `npm install package1@latest package2@latest` to update every dependency that is not
+   a major version bump.
+3. Run tests to ensure nothing has broken.
+4. Inform the user which packages are major version bumps and therefore were not applied.
