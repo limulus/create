@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
-
 import { EventEmitter } from 'events'
 import { PassThrough } from 'stream'
 import { vi } from 'vitest'
