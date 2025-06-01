@@ -68,3 +68,8 @@ Only certain commit messages will trigger changes to the semantic version of the
 - The `feat` prefix bumps the minor version
 - The `fix` prefix bumps the patch version
 - All other commit messages have no effect on the version
+
+### Create Project Specific Guidelines
+
+All changes to files in skel are either features or bug fixes, so commits that include such
+files should use either `fix` or `feat` prefixes.
