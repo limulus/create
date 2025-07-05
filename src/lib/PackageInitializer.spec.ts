@@ -81,6 +81,50 @@ describe('PackageInitializer', () => {
       expect(tsConfig).toMatch(/"moduleResolution":\s*"bundler"/)
       expect(tsConfig).not.toMatch(/"types"/)
     })
+
+    it('should fail when repository has uncommitted changes', async () => {
+      // Create a file in the repo to make it dirty
+      const existingFile = path.join(directory, 'existing.txt')
+      fs.writeFileSync(existingFile, 'existing content')
+
+      const initializer = new PackageInitializer(pkg)
+      await expect(initializer.initialize(directory)).rejects.toThrow(/must be clean/)
+    })
+
+    it('should succeed and overwrite files when repository has committed files', async () => {
+      // Create and commit a file that will be overwritten
+      const existingFile = path.join(directory, 'README.md')
+      const env = gitlessEnv()
+      const git = makeGitCommand(directory, env)
+
+      // First create an initial commit so we can make subsequent commits
+      fs.writeFileSync(path.join(directory, '.gitignore'), 'node_modules\n')
+      git('add', '.gitignore')
+      git('commit', '-m', 'Initial commit')
+
+      // Now add the file that will be overwritten
+      fs.writeFileSync(existingFile, 'existing readme content')
+      git('add', 'README.md')
+      git('commit', '-m', 'Add existing README')
+
+      const initializer = new PackageInitializer(pkg)
+      await initializer.initialize(directory)
+
+      // Check that the file was overwritten with template content
+      const readmeContent = fs.readFileSync(existingFile, 'utf8')
+      expect(readmeContent).toContain('@limulus/zuul')
+      expect(readmeContent).toContain('There is only zuul')
+      expect(readmeContent).not.toContain('existing readme content')
+    })
+
+    it('should fail when repository has untracked files that would be overwritten', async () => {
+      // Create an untracked file that would conflict with a template file
+      const conflictingFile = path.join(directory, 'README.md')
+      fs.writeFileSync(conflictingFile, 'untracked readme content')
+
+      const initializer = new PackageInitializer(pkg)
+      await expect(initializer.initialize(directory)).rejects.toThrow(/must be clean/)
+    })
   })
 })
 
@@ -90,6 +134,20 @@ const makePackage = (): Package => {
 
 const makeGitRepo = (): string => {
   const directory = temporaryDirectory()
-  execFileSync('git', ['init', directory])
+  const env = gitlessEnv()
+  const git = makeGitCommand(directory, env)
+
+  execFileSync('git', ['init', directory], { env, stdio: 'pipe' })
+  git('config', 'user.email', 'test@example.com')
+  git('config', 'user.name', 'Test User')
+  git('checkout', '-b', 'main')
   return directory
 }
+
+const makeGitCommand =
+  (directory: string, env: NodeJS.ProcessEnv) =>
+  (...args: string[]) =>
+    execFileSync('git', args, { cwd: directory, env, stdio: 'pipe' })
+
+const gitlessEnv = () =>
+  Object.fromEntries(Object.entries(process.env).filter(([k]) => !k.startsWith('GIT_')))

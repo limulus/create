@@ -63,7 +63,7 @@ describe('GitRepository', () => {
   })
 
   describe('.githubRepoName()', () => {
-    it('should throw when orgin remote is not set', async () => {
+    it('should throw when origin remote is not set', async () => {
       const repository = new GitRepository(directory)
       await expect(async () => await repository.githubRepoName()).rejects.toThrow(
         /remote 'origin' does not exist/i
@@ -136,7 +136,7 @@ const addFileToDirectory = (directory: string): void => {
 
 const createTempGitRepo = (): string => {
   const directory = temporaryDirectory()
-  execFileSync('git', ['init', directory], { env: gitlessEnv() })
+  execFileSync('git', ['init', directory], { env: gitlessEnv(), stdio: 'pipe' })
   const execGit = makeExecGit(directory)
   execGit('checkout', '-b', 'main')
   return directory
