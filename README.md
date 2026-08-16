@@ -25,6 +25,6 @@ Available targets:
 ### Options
 
 - `--target <node|web>`: Set the module target (default: node)
-- `--help`: Display help information
+- `-h`, `--help`: Display help information
 
 When you are ready to do an initial release, merge `v1-workspace` into `main`.

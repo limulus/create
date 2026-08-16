@@ -1,10 +1,12 @@
 import is from '@sindresorhus/is'
-import { SimpleGit, simpleGit, RemoteWithRefs } from 'simple-git'
+import { type SimpleGit, simpleGit, type RemoteWithRefs } from 'simple-git'
 
 export default class GitRepository {
+  readonly directory: string
   readonly repo: SimpleGit
 
-  constructor(readonly directory: string) {
+  constructor(directory: string) {
+    this.directory = directory
     this.repo = simpleGit(directory)
   }
 

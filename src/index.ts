@@ -1,2 +1,2 @@
-export { default as PackageInitializer } from './lib/PackageInitializer.js'
-export { default as CLI } from './lib/CLI.js'
+export { default as PackageInitializer } from './lib/PackageInitializer.ts'
+export { default as CLI } from './lib/CLI.ts'

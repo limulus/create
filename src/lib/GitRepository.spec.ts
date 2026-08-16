@@ -1,7 +1,7 @@
-import { execFileSync } from 'child_process'
 import { deleteSync } from 'del'
-import fs from 'fs'
-import path from 'path'
+import { execFileSync } from 'node:child_process'
+import fs from 'node:fs'
+import path from 'node:path'
 import { temporaryDirectory } from 'tempy'
 import touch from 'touch'
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
@@ -9,7 +9,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import GitRepository, {
   assertDirectoryIsGitRepository,
   assertGitRepositoryIsClean,
-} from './GitRepository.js'
+} from './GitRepository.ts'
 
 let directory: string
 

@@ -1,10 +1,10 @@
 import getStream from 'get-stream'
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
-import { inject } from './CLI.js'
-import PackageInitializerMock from '../mocks/PackageInitializerMock.js'
-import PackageMock from '../mocks/PackageMock.js'
-import ProcessMock from '../mocks/ProcessMock.js'
+import { inject } from './CLI.ts'
+import PackageInitializerMock from '../mocks/PackageInitializerMock.ts'
+import PackageMock from '../mocks/PackageMock.ts'
+import ProcessMock from '../mocks/ProcessMock.ts'
 
 const CLI = inject({ Package: PackageMock, PackageInitializer: PackageInitializerMock })
 
@@ -49,12 +49,60 @@ describe('CLI', () => {
       ])
     })
 
-    it('should throw error for invalid target value', async () => {
+    it('should report an invalid target value and exit non-zero', async () => {
       process = new ProcessMock(['name', 'a description', '--target', 'invalid'])
+      const stderrPromise = getStream(process.stderr)
+
       const cli = new CLI(process)
-      await expect(cli.run()).rejects.toThrow(
-        'Invalid target: invalid. Must be "web" or "node"'
+      await cli.run()
+      const stderrData = await stderrPromise
+
+      expect(stderrData).toContain(
+        'Error: Invalid target: invalid. Must be "web" or "node"'
       )
+      expect(stderrData).toContain('Usage: create')
+      expect(process.exit).toHaveBeenCalledWith(1)
+      expect(PackageMock).not.toHaveBeenCalled()
+    })
+
+    it('should report a missing --target argument and exit non-zero', async () => {
+      process = new ProcessMock(['name', 'a description', '--target'])
+      const stderrPromise = getStream(process.stderr)
+
+      const cli = new CLI(process)
+      await cli.run()
+      const stderrData = await stderrPromise
+
+      expect(stderrData).toContain(`Option '--target <value>' argument missing`)
+      expect(process.exit).toHaveBeenCalledWith(1)
+      expect(PackageMock).not.toHaveBeenCalled()
+    })
+
+    it('should report an unknown option and exit non-zero', async () => {
+      process = new ProcessMock(['name', 'a description', '--bogus'])
+      const stderrPromise = getStream(process.stderr)
+
+      const cli = new CLI(process)
+      await cli.run()
+      const stderrData = await stderrPromise
+
+      expect(stderrData).toContain(`Unknown option '--bogus'`)
+      expect(process.exit).toHaveBeenCalledWith(1)
+      expect(PackageMock).not.toHaveBeenCalled()
+    })
+
+    it('should display help when -h is passed', async () => {
+      process = new ProcessMock(['-h'])
+
+      const stdoutPromise = getStream(process.stdout)
+
+      const cli = new CLI(process)
+      await cli.run()
+      const stdoutData = await stdoutPromise
+
+      expect(stdoutData).toContain('Usage: create <package-name> <description> [options]')
+      expect(process.exit).toHaveBeenCalledWith(0)
+      expect(PackageMock).not.toHaveBeenCalled()
     })
 
     it('should call PackageInitializer.initialize() with cwd', async () => {
@@ -104,7 +152,7 @@ describe('CLI', () => {
     it('should handle error from Package constructor', async () => {
       const stderrPromise = getStream(process.stderr)
 
-      PackageMock.mockImplementationOnce(() => {
+      PackageMock.mockImplementationOnce(function () {
         throw new Error('Test error')
       })
       const cli = new CLI(process)

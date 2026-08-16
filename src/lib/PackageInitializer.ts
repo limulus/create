@@ -1,18 +1,22 @@
 import copy from '@danieldietrich/copy'
 import mustache from 'mustache'
-import path, { dirname } from 'path'
-import { fileURLToPath } from 'url'
+import path, { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 import {
   assertDirectoryIsGitRepository,
   assertGitRepositoryIsClean,
-} from './GitRepository.js'
-import Package from './Package.js'
+} from './GitRepository.ts'
+import Package from './Package.ts'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default class PackageInitializier {
-  constructor(readonly pkg: Package) {}
+  readonly pkg: Package
+
+  constructor(pkg: Package) {
+    this.pkg = pkg
+  }
 
   async initialize(directory: string): Promise<void> {
     await assertDirectoryIsGitRepository(directory)

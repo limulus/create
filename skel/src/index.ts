@@ -1,1 +1,1 @@
-export * from './lib/Example.js'
+export * from './lib/example.ts'

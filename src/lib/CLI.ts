@@ -1,5 +1,7 @@
-import Package, { PackageTarget } from './Package.js'
-import PackageInitializer from './PackageInitializer.js'
+import { parseArgs } from 'node:util'
+
+import Package, { type PackageTarget } from './Package.ts'
+import PackageInitializer from './PackageInitializer.ts'
 
 interface Process extends NodeJS.EventEmitter {
   readonly argv: string[]
@@ -11,87 +13,92 @@ interface Process extends NodeJS.EventEmitter {
   cwd: () => string
 }
 
-export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
-  class CLI {
-    constructor(readonly process: Process) {}
+interface CLIOptions {
+  help: boolean
+  target: PackageTarget
+  positionals: string[]
+}
 
-    async run(): Promise<void> {
-      const helpText = `
+const helpText = `
 Usage: create <package-name> <description> [options]
 
 Options:
   --target <target>  Set the module target (node or web) [default: node]
-  --help             Show this help text
+  -h, --help         Show this help text
 
 Examples:
   create my-package "A description of my package"
   create my-package "A description of my package" --target web
 `
 
-      const { values, positionals } = this.parseArgs(this.process.argv.slice(2))
+const isPackageTarget = (value: unknown): value is PackageTarget =>
+  value === 'node' || value === 'web'
 
-      if (values.help) {
+/**
+ * Throws on malformed input — an unknown option, a missing option argument, or a
+ * `--target` value outside the supported set. `run()` renders those as a stderr message
+ * plus usage text rather than letting them escape as a stack trace.
+ */
+const parseOptions = (args: string[]): CLIOptions => {
+  const { values, positionals } = parseArgs({
+    args,
+    options: {
+      help: { type: 'boolean', short: 'h', default: false },
+      target: { type: 'string', default: 'node' },
+    },
+    allowPositionals: true,
+  })
+
+  if (!isPackageTarget(values.target)) {
+    throw new Error(`Invalid target: ${values.target}. Must be "web" or "node"`)
+  }
+
+  return { help: values.help === true, target: values.target, positionals }
+}
+
+export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
+  class CLI {
+    readonly process: Process
+
+    constructor(process: Process) {
+      this.process = process
+    }
+
+    async run(): Promise<void> {
+      let options: CLIOptions
+
+      try {
+        options = parseOptions(this.process.argv.slice(2))
+      } catch (error) {
+        this.process.stderr.write(`Error: ${(error as Error).message}\n\n`)
+        this.process.stderr.write(helpText)
+        this.process.exit(1)
+        return
+      }
+
+      if (options.help) {
         this.process.stdout.write(helpText)
         this.process.exit(0)
         return
       }
 
-      if (positionals.length < 2) {
+      if (options.positionals.length < 2) {
         this.process.stderr.write('Error: Missing required arguments\n\n')
         this.process.stderr.write(helpText)
         this.process.exit(1)
         return
       }
 
-      const name = positionals[0]
-      const description = positionals[1]
-      const target = (values.target as PackageTarget) || 'node'
+      const [name, description] = options.positionals
 
       try {
-        const pkg = new Package({ name, description, target })
+        const pkg = new Package({ name, description, target: options.target })
         const initializer = new PackageInitializer(pkg)
         await initializer.initialize(this.process.cwd())
       } catch (error) {
         this.process.stderr.write(`Error: ${(error as Error).message}\n`)
         this.process.exit(1)
       }
-    }
-
-    /**
-     * Simple argument parser that mimics the Node.js parseArgs API
-     */
-    parseArgs(args: string[]): {
-      values: Record<string, unknown>
-      positionals: string[]
-    } {
-      const values: Record<string, unknown> = {}
-      const positionals: string[] = []
-
-      for (let i = 0; i < args.length; i++) {
-        const arg = args[i]
-
-        if (arg.startsWith('--')) {
-          const name = arg.slice(2)
-
-          if (name === 'help') {
-            values.help = true
-            continue
-          }
-
-          if (name === 'target' && i + 1 < args.length && !args[i + 1].startsWith('--')) {
-            const value = args[i + 1]
-            if (value !== 'web' && value !== 'node') {
-              throw new Error(`Invalid target: ${value}. Must be "web" or "node"`)
-            }
-            values.target = value
-            i++ // Skip the next argument since we've consumed it
-          }
-        } else {
-          positionals.push(arg)
-        }
-      }
-
-      return { values, positionals }
     }
   }
 

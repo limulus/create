@@ -1,12 +1,12 @@
-import { execFileSync } from 'child_process'
-import fs from 'fs'
-import path, { dirname } from 'path'
+import { execFileSync } from 'node:child_process'
+import fs from 'node:fs'
+import path, { dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { temporaryDirectory } from 'tempy'
-import { fileURLToPath } from 'url'
 import { describe, it, expect, beforeEach } from 'vitest'
 
-import Package from './Package.js'
-import PackageInitializer from './PackageInitializer.js'
+import Package from './Package.ts'
+import PackageInitializer from './PackageInitializer.ts'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -20,7 +20,12 @@ describe('PackageInitializer', () => {
   })
 
   describe('.initialize()', () => {
-    describe.each(['src/index.ts'])('skel/%s', (file) => {
+    describe.each([
+      'src/index.ts',
+      'src/lib/example.ts',
+      'tsconfig.json',
+      'tsconfig.build.json',
+    ])('skel/%s', (file) => {
       it('should be copied into the repo', async () => {
         const skelFilePath = path.join(__dirname, '..', '..', 'skel', file)
         const destFilePath = path.join(directory, file)
@@ -33,21 +38,22 @@ describe('PackageInitializer', () => {
       })
     })
 
-    describe.each(['README.md.mustache', '.gitignore.mustache', 'tsconfig.json.mustache'])(
-      'skel/%s',
-      (file) => {
-        it('should be copied into the repo without .gitignore extension', async () => {
-          const skelFilePath = path.join(__dirname, '..', '..', 'skel', file)
-          const destFilePath = path.join(directory, file.replace(/\.mustache$/, ''))
-          expect(fs.existsSync(skelFilePath)).toBe(true)
-          expect(fs.existsSync(destFilePath)).toBe(false)
+    describe.each([
+      'README.md.mustache',
+      '.gitignore.mustache',
+      'tsconfig.base.json.mustache',
+    ])('skel/%s', (file) => {
+      it('should be copied into the repo without .gitignore extension', async () => {
+        const skelFilePath = path.join(__dirname, '..', '..', 'skel', file)
+        const destFilePath = path.join(directory, file.replace(/\.mustache$/, ''))
+        expect(fs.existsSync(skelFilePath)).toBe(true)
+        expect(fs.existsSync(destFilePath)).toBe(false)
 
-          const initializer = new PackageInitializer(pkg)
-          await initializer.initialize(directory)
-          expect(fs.existsSync(destFilePath)).toBe(true)
-        })
-      }
-    )
+        const initializer = new PackageInitializer(pkg)
+        await initializer.initialize(directory)
+        expect(fs.existsSync(destFilePath)).toBe(true)
+      })
+    })
 
     it('should hydrate templates with info from given Package object', async () => {
       const packageJsonDest = path.join(directory, 'package.json')
@@ -58,8 +64,8 @@ describe('PackageInitializer', () => {
       )
     })
 
-    it('should apply node moduleConfig to tsconfig.json when target is node', async () => {
-      const tsConfigDest = path.join(directory, 'tsconfig.json')
+    it('should apply node moduleConfig to tsconfig.base.json when target is node', async () => {
+      const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
         new Package({ name: '@test/pkg', description: 'Test', target: 'node' })
       )
@@ -70,8 +76,8 @@ describe('PackageInitializer', () => {
       expect(tsConfig).toMatch(/"types":\s*\["node"\]/)
     })
 
-    it('should apply web moduleConfig to tsconfig.json when target is web', async () => {
-      const tsConfigDest = path.join(directory, 'tsconfig.json')
+    it('should apply web moduleConfig to tsconfig.base.json when target is web', async () => {
+      const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
         new Package({ name: '@test/pkg', description: 'Test', target: 'web' })
       )

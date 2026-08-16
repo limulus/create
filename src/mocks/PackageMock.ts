@@ -1,13 +1,15 @@
 import { vi } from 'vitest'
 
-import Package from '../lib/Package.js'
+import Package from '../lib/Package.ts'
 
-export default vi.mocked(
-  vi.fn().mockImplementation(() => ({
-    moduleConfig: {
-      module: 'NodeNext',
-      moduleResolution: 'nodenext',
-      types: ['node'],
-    },
-  })) as unknown as typeof Package
-)
+const prototype = {
+  moduleConfig: {
+    module: 'NodeNext',
+    moduleResolution: 'nodenext',
+    types: ['node'],
+  },
+}
+const PackageMock = vi.fn()
+PackageMock.prototype = prototype
+
+export default vi.mocked(PackageMock as unknown as typeof Package)

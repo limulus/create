@@ -1,37 +1,121 @@
 # Create Project Helper Guide
 
+## Project Overview
+
+`@unallocate/create` is a CLI that scaffolds a new TypeScript package into an existing,
+clean git repository. Everything under `skel/` is the template: `PackageInitializer` copies
+that tree into the target directory, stripping the `.mustache` suffix and rendering those
+files against a `Package` instance.
+
+Two things follow from that, and they are the most common source of mistakes:
+
+- **`skel/` is not this project's source.** It is data. It is excluded from lint, coverage,
+  and typecheck, so nothing here will tell you when a template breaks. Verify template
+  changes by generating a project and running its `verify` (see Common Tasks).
+- **Template changes are user-facing.** All changes to files in `skel/` are either features
+  or bug fixes, so commits touching them use the `feat` or `fix` prefix — never `chore` or
+  `refactor`.
+
 ## Commands
 
-- Build: `npm run build`
-- Clean: `npm run clean`
-- Lint: `npm run lint`
-- Fix linting: `npm run lint:fix`
-- Type check: `npm run tscc`
-- Test (all): `npm run test`
-- Test (single file): `npm test -- src/path/to/file.spec.ts`
-- Verify (lint+test+typecheck): `npm run verify`
+```bash
+# The gate: eslint, vitest with coverage, and tsc. Run it after making changes — it is
+# exactly what pre-push and CI run, so green here means green there.
+npm run verify
+
+# Autofix lint. Run it first, then re-run verify — never concurrently with it, since it
+# rewrites the same files verify is reading.
+npm run lint:fix
+
+# Test (single file)
+npx vitest run src/lib/CLI.spec.ts
+
+npm run build     # emit dist/ via the native compiler
+npm run clean     # remove dist, coverage, *.tsbuildinfo
+npm run tscc      # typecheck only
+```
+
+## TypeScript Setup
+
+Node runs `.ts` files directly via type stripping (v22.18+/v24), so imports name the real
+file: `import x from './x.ts'`. Only the erasable subset of TypeScript survives that —
+`erasableSyntaxOnly` is on to enforce it at compile time. It forbids:
+
+- `enum` declarations — use an `as const` object plus a derived union type instead
+- Parameter properties (`constructor(readonly foo: string) {}`) — declare the field and
+  assign it in the constructor body
+- `namespace` with runtime code, and `import =` aliases
+
+`verbatimModuleSyntax` is also on, so any imported name used only as a type needs the `type`
+keyword. Prefer inline specifiers over a separate statement:
+`import Package, { type PackageTarget } from './Package.ts'`.
+
+### Two TypeScript packages
+
+Typechecking and building run the TypeScript 7 native compiler through the `typescript-7`
+npm alias, invoked by explicit path (`node node_modules/typescript-7/bin/tsc`) because both
+packages ship a `tsc` bin and would collide on `.bin/tsc`. typescript-eslint deliberately
+stays on the stable `typescript` package — it has no native-compiler support until the
+stable API in TS 7.1. Don't "simplify" this arrangement.
+
+## Testing
+
+- **BDD with 100% coverage** — no exceptions. Prefer assertions over defensive programming;
+  if you think you need a `/* v8 ignore … */`, pause and confirm with the user first
+- **RSpec-style nesting** — `describe` for subject/context, `it('should …')` for assertions
+- **Avoid `vi.mock()`** — the hand-written mocks in `src/mocks/` are injected through
+  `CLI.inject()`, which is why that seam exists. Prefer exercising real dependencies
+- **vitest 4 constructs mock implementations with `new`.** An arrow function is not
+  constructable, so `vi.fn().mockImplementation(() => ({ … }))` throws when the subject
+  calls `new`. Supply the shape via `Mock.prototype`, or use a `function` expression when
+  the implementation needs to throw
+- `PackageInitializer.spec.ts` asserts that specific `skel/` files land in the target
+  directory. Renaming or removing a template file means updating those lists
 
 ## Code Style Guidelines
 
-- **ESM**: Use ES Modules (`import/export` not `require()`)
-- **File Extensions**: Always include `.js` in imports (e.g., `import x from './x.js'`)
+- **ESM**: Use ES Modules (`import/export`, not `require()`)
+  - Use the `node:` prefix for Node.js built-ins
+- **File Extensions**: Always include `.ts` in relative imports
 - **Typing**: Use strict TypeScript typing, prefer interfaces for object types
-- **Semicolons**: Do not use semi-colons to end statements (rely on ASI)
+  - Prefer explicit types over inference for public APIs
+- **Semicolons**: Do not use semicolons to end statements (rely on ASI)
 - **Naming**:
   - Classes: PascalCase
   - Methods/variables: camelCase
-  - Files: PascalCase for classes, camelCase for modules
-- **Testing**: 100% coverage required (functions, branches, lines, statements)
+  - Files: PascalCase for modules whose default export is a class (`src/lib/` follows this),
+    camelCase otherwise. Note that `skel/` uses kebab-case — generated projects follow the
+    newer convention, and this project's existing filenames were left alone
 - **Error Handling**: Use typed errors and proper propagation
 - **Comments**:
   - Only add comments to explain _why_ code is doing something unusual or non-obvious
-  - Avoid comments that merely describe _what_ the code is doing (the code already shows that)
+  - Avoid comments that merely describe _what_ the code is doing (the code already shows
+    that)
   - Use JSDoc for public API documentation where appropriate
-- **Project Structure**:
-  - `src/lib/` - Core functionality
-  - `src/bin/` - CLI entry points
-  - `src/mocks/` - Test mocks
-  - `skel/` - Templates used to create new projects
+- Don't re-invent the wheel — prefer a well-used npm package over your own implementation
+  that may miss important edge cases
+
+## Project Structure
+
+- `src/lib/` — core functionality
+- `src/bin/` — CLI entry points
+- `src/mocks/` — test mocks (not published)
+- `skel/` — templates used to create new projects
+
+## Gotchas
+
+- **`lint` pins its config explicitly** (`eslint . --config eslint.config.js`). ESLint 10
+  looks up the nearest `eslint.config.js` per file, so a bare `eslint .` finds
+  `skel/eslint.config.js` and lints the templates against a tsconfig that only exists after
+  generation. The explicit `--config` keeps the run on the root config, where
+  `globalIgnores` skips `skel/`
+
+## Committing
+
+Do not run `git commit` unless the user has explicitly asked you to. The user reviews diffs
+before they go in — landing work without a review denies them that step. Finishing a task
+means the working tree is clean of uncommitted _unintended_ changes and `npm run verify`
+passes; staging and committing is a separate, user-initiated step.
 
 ## Commit Message Guidelines
 
@@ -46,7 +130,7 @@ format.
 - `docs: msg`: changes to documentation
 - `ci: msg`: build pipeline
 - `chore: msg`: updating dependencies, miscellany
-- Breaking changes to exposed APIs surfaces must be documented with a footer/trailer. For
+- Breaking changes to exposed API surfaces must be documented with a footer/trailer. For
   example:
 
   ```
@@ -71,5 +155,17 @@ Only certain commit messages will trigger changes to the semantic version of the
 
 ### Create Project Specific Guidelines
 
-All changes to files in skel are either features or bug fixes, so commits that include such
-files should use either `fix` or `feat` prefixes.
+All changes to files in `skel/` are either features or bug fixes, so commits that include
+such files should use either `fix` or `feat` prefixes.
+
+## Common Tasks
+
+```bash
+# Verify a skel/ change end-to-end. Nothing in this repo's own test suite runs the
+# generated project's toolchain, so this is the only way to know a template edit works.
+npm run build
+mkdir /tmp/scratch && cd /tmp/scratch
+git init . && git commit --allow-empty -m init
+node /path/to/create/dist/bin/create.js scratch "A scratch package"
+npm install && npm run verify && npm run build
+```

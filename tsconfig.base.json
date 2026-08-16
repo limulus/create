@@ -1,25 +1,21 @@
 {
   "compilerOptions": {
+    "erasableSyntaxOnly": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "isolatedModules": true,
-    "jsx": "react",
-    "module": "{{{package.moduleConfig.module}}}",
-    "moduleResolution": "{{{package.moduleConfig.moduleResolution}}}",
-{{#package.moduleConfig.types}}
-    "types": ["node"],
-{{/package.moduleConfig.types}}
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "preserveWatchOutput": true,
-    "rootDir": "./src",
     "skipLibCheck": true,
-    "sourceMap": true,
     "strict": true,
-    "target": "ES2022"
-  },
-  "include": ["./src/**/*", "./types/**/*"]
+    "target": "ES2022",
+    "types": ["node"],
+    "verbatimModuleSyntax": true
+  }
 }

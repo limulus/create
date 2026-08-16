@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { CLI } from '../index.js'
+import { CLI } from '../index.ts'
 
 const cli = new CLI(process)
 

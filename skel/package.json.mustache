@@ -2,14 +2,12 @@
   "name": "{{{package.name}}}",
   "version": "1.0.0",
   "description": "{{{package.description}}}",
-  "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/types/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/types/index.d.ts"
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js"
     }
   },
   "files": [
@@ -17,20 +15,19 @@
     "src"
   ],
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "concurrently -c auto 'npm:build:*'",
-    "build:cjs": "tsc --incremental false --module commonjs --outDir dist/cjs",
-    "build:dts": "tsc --incremental false --declaration --declarationMap --emitDeclarationOnly --outDir dist/types",
-    "build:esm": "tsc --incremental false --outDir dist/esm",
-    "postbuild:cjs": "echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "build": "node node_modules/typescript-7/bin/tsc --build tsconfig.build.json",
     "clean": "del-cli *.tsbuildinfo coverage dist",
-    "lint": "eslint *.ts src",
+    "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "prepack": "npm run build",
     "prepare": "is-ci || husky",
     "test": "vitest run --coverage",
-    "tscc": "tsc --noEmit",
+    "tscc": "node node_modules/typescript-7/bin/tsc --build",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
   },
   "repository": {
@@ -54,19 +51,18 @@
     "registry": "{{{ package.publishRegistry }}}"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
-    "@limulus/eslint-config": "^6.0.0",
-    "@types/node": "^22.15.29",
-    "@vitest/coverage-v8": "^3.1.4",
-    "concurrently": "^9.1.2",
-    "del-cli": "^6.0.0",
-    "eslint": "^9.28.0",
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@limulus/eslint-config": "^6.2.0",
+    "@types/node": "^24.12.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "concurrently": "^10.0.5",
+    "del-cli": "^7.0.0",
+    "eslint": "^10.8.1",
     "husky": "^9.1.7",
     "is-ci": "^4.1.0",
-    "mkdirp": "^3.0.1",
-    "semantic-release": "^24.2.5",
-    "typescript": "^5.8.3",
-    "vitest": "^3.1.4"
+    "typescript": "^6.0.3",
+    "typescript-7": "npm:typescript@7.0.2",
+    "vitest": "^4.1.10"
   }
 }

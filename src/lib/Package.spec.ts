@@ -1,6 +1,6 @@
 import { vi, describe, it, expect } from 'vitest'
 
-import Package from './Package.js'
+import Package from './Package.ts'
 
 describe('Package', () => {
   describe('constructor()', () => {

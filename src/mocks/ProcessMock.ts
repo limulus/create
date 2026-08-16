@@ -1,6 +1,6 @@
-import { EventEmitter } from 'events'
-import { PassThrough } from 'stream'
-import { vi } from 'vitest'
+import { EventEmitter } from 'node:events'
+import { PassThrough } from 'node:stream'
+import { vi, type Mock } from 'vitest'
 
 export default class ProcessMock extends EventEmitter {
   readonly argv: string[]
@@ -8,7 +8,7 @@ export default class ProcessMock extends EventEmitter {
   readonly stdin: PassThrough
   readonly stdout: PassThrough
   readonly stderr: PassThrough
-  exit: ReturnType<typeof vi.fn>
+  exit: Mock<(code?: number) => void>
 
   constructor(argv: string[]) {
     super()
@@ -17,7 +17,7 @@ export default class ProcessMock extends EventEmitter {
     this.stdin = new PassThrough()
     this.stdout = new PassThrough()
     this.stderr = new PassThrough()
-    this.exit = vi.fn().mockImplementation((code = 0) => {
+    this.exit = vi.fn((code = 0) => {
       this.stdin.end()
       this.stdout.end()
       this.stderr.end()

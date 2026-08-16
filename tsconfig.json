@@ -1,26 +1,10 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "isolatedModules": true,
-    "incremental": true,
-    "jsx": "react",
-    "module": "nodenext",
-    "moduleResolution": "nodenext",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "outDir": "./dist",
-    "preserveWatchOutput": true,
-    "rootDir": "./src",
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "ES2022"
+    "allowImportingTsExtensions": true,
+    "composite": true,
+    "noEmit": true
   },
-  "include": ["./src/**/*", "./types/**/*"]
+  "include": ["src/**/*.spec.ts", "src/mocks/**/*", "types/**/*", "*.ts", "*.js"],
+  "references": [{ "path": "./tsconfig.build.json" }]
 }

@@ -2,35 +2,98 @@
 
 ## Commands
 
-- Build: `npm run build`
-- Clean: `npm run clean`
-- Lint: `npm run lint`
-- Fix linting: `npm run lint:fix`
-- Type check: `npm run tscc`
-- Test (all): `npm run test`
-- Test (single file): `npm test -- src/path/to/file.spec.ts`
-- Verify (lint+test+typecheck): `npm run verify`
+```bash
+# The gate: eslint, vitest with coverage, and tsc. Run it after making changes — it is
+# exactly what pre-push and CI run, so green here means green there.
+npm run verify
+
+# Autofix lint. Run it first, then re-run verify — never concurrently with it, since it
+# rewrites the same files verify is reading.
+npm run lint:fix
+
+# Test (single file)
+npx vitest run src/lib/example.spec.ts
+
+npm run build     # emit dist/esm and dist/types via the native compiler
+npm run clean     # remove dist, coverage, *.tsbuildinfo
+npm run tscc      # typecheck only
+```
+
+## TypeScript Setup
+
+Node runs `.ts` files directly via type stripping (v22.18+/v24), so imports name the real
+file: `import x from './x.ts'`. Only the erasable subset of TypeScript survives that —
+`erasableSyntaxOnly` is on to enforce it at compile time. It forbids:
+
+- `enum` declarations — use an `as const` object plus a derived union type instead:
+
+  ```ts
+  export const Direction = { Up: 1, Right: 2, Down: 3, Left: 4 } as const
+  export type Direction = (typeof Direction)[keyof typeof Direction]
+  ```
+
+- Parameter properties (`constructor(readonly foo: string) {}`) — declare the field and
+  assign it in the constructor body
+- `namespace` with runtime code, and `import =` aliases
+
+`verbatimModuleSyntax` is also on, so any imported name used only as a type needs the `type`
+keyword. Prefer inline specifiers over a separate statement:
+`import { foo, type Bar } from './baz.ts'`.
+
+### Two TypeScript packages
+
+Typechecking and building run the TypeScript 7 native compiler through the `typescript-7`
+npm alias, invoked by explicit path (`node node_modules/typescript-7/bin/tsc`) because both
+packages ship a `tsc` bin and would collide on `.bin/tsc`. typescript-eslint deliberately
+stays on the stable `typescript` package — it has no native-compiler support until the
+stable API in TS 7.1. Don't "simplify" this arrangement.
+
+## Testing
+
+- **BDD with 100% coverage** — no exceptions. Prefer assertions over defensive programming;
+  if you think you need a `/* v8 ignore … */`, pause and confirm with the user first
+- **RSpec-style nesting** — `describe` for subject/context, `it('should …')` for assertions.
+  No Given/When/Then
+- **Avoid `vi.mock()`** — prefer tests that exercise real dependencies, and mock at the
+  network layer (MSW) when you need to isolate from HTTP
+- **vitest 4 constructs mock implementations with `new`.** An arrow function is not
+  constructable, so `vi.fn().mockImplementation(() => ({ … }))` throws when the subject
+  calls `new`. Supply the shape via `Mock.prototype`, or use a `function` expression when
+  the implementation needs to throw
 
 ## Code Style Guidelines
 
-- **ESM**: Use ES Modules (`import/export` not `require()`)
-- **File Extensions**: Always include `.js` in imports (e.g., `import x from './x.js'`)
+- **ESM**: Use ES Modules (`import/export`, not `require()`)
+  - Use the `node:` prefix for Node.js built-ins
+- **File Extensions**: Always include `.ts` in relative imports
 - **Typing**: Use strict TypeScript typing, prefer interfaces for object types
+  - Prefer explicit types over inference for public APIs
 - **Semicolons**: Do not use semicolons to end statements (rely on ASI)
 - **Naming**:
   - Classes: PascalCase
   - Methods/variables: camelCase
   - Files: kebab-case for modules
-- **Testing**: 100% coverage required (functions, branches, lines, statements)
+  - Acronyms stay upper case (i.e. use `SSRFFetchOptions`, not `SsrfFetchOptions`)
 - **Error Handling**: Use typed errors and proper propagation
 - **Comments**:
   - Only add comments to explain _why_ code is doing something unusual or non-obvious
-  - Avoid comments that merely describe _what_ the code is doing (the code already shows that)
+  - Avoid comments that merely describe _what_ the code is doing (the code already shows
+    that)
   - Use JSDoc for public API documentation where appropriate
-- **Project Structure**:
-  - `src/lib/` - Core functionality
-  - `src/bin/` - CLI entry points
-  - `src/mocks/` - Test mocks
+- Don't re-invent the wheel — prefer a well-used npm package over your own implementation
+  that may miss important edge cases
+
+## Project Structure
+
+- `src/lib/` — core functionality
+- `src/index.ts` — the public API barrel; anything not re-exported here is internal
+
+## Committing
+
+Do not run `git commit` unless the user has explicitly asked you to. The user reviews diffs
+before they go in — landing work without a review denies them that step. Finishing a task
+means the working tree is clean of uncommitted _unintended_ changes and `npm run verify`
+passes; staging and committing is a separate, user-initiated step.
 
 ## Commit Message Guidelines
 
@@ -45,7 +108,7 @@ format.
 - `docs: msg`: changes to documentation
 - `ci: msg`: build pipeline
 - `chore: msg`: updating dependencies, miscellany
-- Breaking changes to exposed APIs surfaces must be documented with a footer/trailer. For
+- Breaking changes to exposed API surfaces must be documented with a footer/trailer. For
   example:
 
   ```
@@ -67,4 +130,3 @@ Only certain commit messages will trigger changes to the semantic version of the
 - The `feat` prefix bumps the minor version
 - The `fix` prefix bumps the patch version
 - All other commit messages have no effect on the version
-

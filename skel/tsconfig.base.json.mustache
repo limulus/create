@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "erasableSyntaxOnly": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "module": "{{{package.moduleConfig.module}}}",
+    "moduleResolution": "{{{package.moduleConfig.moduleResolution}}}",
+{{#package.moduleConfig.types}}
+    "types": ["node"],
+{{/package.moduleConfig.types}}
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022",
+    "verbatimModuleSyntax": true
+  }
+}
