@@ -3,7 +3,7 @@ import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
   ...config,
-  globalIgnores(['dist/**/*']),
+  globalIgnores(['dist/**/*', 'coverage/**']),
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts', '**/*.js'],
 
