@@ -41,9 +41,10 @@ describe('PackageInitializer', () => {
     describe.each([
       'README.md.mustache',
       '.gitignore.mustache',
+      '.npmrc.mustache',
       'tsconfig.base.json.mustache',
     ])('skel/%s', (file) => {
-      it('should be copied into the repo without .gitignore extension', async () => {
+      it('should be copied into the repo without .mustache extension', async () => {
         const skelFilePath = path.join(__dirname, '..', '..', 'skel', file)
         const destFilePath = path.join(directory, file.replace(/\.mustache$/, ''))
         expect(fs.existsSync(skelFilePath)).toBe(true)
