@@ -40,6 +40,15 @@ file: `import x from './x.ts'`. Only the erasable subset of TypeScript survives 
 keyword. Prefer inline specifiers over a separate statement:
 `import { foo, type Bar } from './baz.ts'`.
 
+### Two tsconfigs
+
+`tsconfig.json` is a single noEmit project over `src/**` (specs included) plus the root
+config files — it is what `tscc`, editors, and typed lint use. `tsconfig.build.json` emits
+`dist/` from non-spec `src/`. Keep them independent: a project reference from
+`tsconfig.json` to the build config would make every typecheck emit `dist/`. The cost of
+this split is that diagnostics raised only during declaration emit surface in `npm run
+build` (CI runs it after `verify`), not in `tscc`.
+
 ### Two TypeScript packages
 
 Typechecking and building run the TypeScript 7 native compiler through the `typescript-7`
