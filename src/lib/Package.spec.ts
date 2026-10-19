@@ -1,4 +1,4 @@
-import { vi, describe, it, expect } from 'vitest'
+import { vi, describe, it, expect, afterEach } from 'vitest'
 
 import Package from './Package.ts'
 
@@ -26,6 +26,16 @@ describe('Package', () => {
       expect(pkg).toHaveProperty('target', 'web')
     })
 
+    it('should default public to false when not specified', () => {
+      const pkg = makePackage()
+      expect(pkg).toHaveProperty('public', false)
+    })
+
+    it('should set public when specified', () => {
+      const pkg = makePackage('@limulus/zuul', undefined, true)
+      expect(pkg).toHaveProperty('public', true)
+    })
+
     it('should throw an error for invalid target', () => {
       expect(
         () =>
@@ -44,6 +54,13 @@ describe('Package', () => {
         const pkg = makePackage('@unallocate/foo')
         expect(pkg.isPrivate).toBe(true)
       })
+
+      describe('and is public', () => {
+        it('should return false', () => {
+          const pkg = makePackage('@unallocate/foo', undefined, true)
+          expect(pkg.isPrivate).toBe(false)
+        })
+      })
     })
 
     describe('when package is unscoped', () => {
@@ -51,6 +68,36 @@ describe('Package', () => {
         const pkg = makePackage('foo')
         expect(pkg.isPrivate).toBe(false)
       })
+    })
+  })
+
+  describe('.license', () => {
+    describe('when package is private', () => {
+      it('should return `UNLICENSED`', () => {
+        const pkg = makePackage('hello')
+        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
+        expect(pkg.license).toBe('UNLICENSED')
+      })
+    })
+
+    describe('when package is public', () => {
+      it('should return `MIT`', () => {
+        const pkg = makePackage('hello')
+        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
+        expect(pkg.license).toBe('MIT')
+      })
+    })
+  })
+
+  describe('.copyrightYear', () => {
+    afterEach(() => {
+      vi.useRealTimers()
+    })
+
+    it('should return the current year', () => {
+      vi.useFakeTimers({ now: new Date(2031, 5, 15) })
+      const pkg = makePackage()
+      expect(pkg.copyrightYear).toBe(2031)
     })
   })
 
@@ -146,10 +193,15 @@ describe('Package', () => {
   })
 })
 
-const makePackage = (name = '@limulus/zuul', target?: 'node' | 'web'): Package => {
+const makePackage = (
+  name = '@limulus/zuul',
+  target?: 'node' | 'web',
+  isPublic?: boolean
+): Package => {
   return new Package({
     name,
     description: 'There is only zuul',
     target,
+    public: isPublic,
   })
 }

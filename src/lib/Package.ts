@@ -4,22 +4,37 @@ interface PackageOptions {
   name: string
   description: string
   target?: PackageTarget
+  public?: boolean
 }
 
 export default class Package {
   readonly name
   readonly description
   readonly target: PackageTarget
+  readonly public: boolean
 
   constructor(options: PackageOptions) {
     this.name = options.name
     this.description = options.description
     this.target = options.target ?? 'node'
+    this.public = options.public ?? false
     this.validate()
   }
 
+  /**
+   * Unscoped packages are always public, since GitHub Packages only hosts scoped ones. A
+   * scoped package is private unless it was created with `public`.
+   */
   get isPrivate(): boolean {
-    return this.scope !== ''
+    return this.scope !== '' && !this.public
+  }
+
+  get license(): 'MIT' | 'UNLICENSED' {
+    return this.isPrivate ? 'UNLICENSED' : 'MIT'
+  }
+
+  get copyrightYear(): number {
+    return new Date().getFullYear()
   }
 
   get publishRegistry(): string {

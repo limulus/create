@@ -22,9 +22,21 @@ Available targets:
 - `node` (default): Uses NodeNext module resolution for Node.js projects 
 - `web`: Uses ESNext modules with bundler resolution for web/browser projects
 
+Scoped packages are private by default: they publish to GitHub Packages, are marked
+`UNLICENSED`, and CI publishes with `GITHUB_TOKEN`. Pass `--public` to publish a scoped
+package to the npm registry with `access: public`, under the MIT license (a `LICENSE` file
+is generated), with CI publishing via the `NPM_TOKEN` secret:
+
+```sh
+npm init @unallocate @scope/pkgname 'A short description' --public
+```
+
+Unscoped packages are always public, with or without `--public`.
+
 ### Options
 
 - `--target <node|web>`: Set the module target (default: node)
+- `--public`: Publish a scoped package publicly to the npm registry, MIT licensed
 - `-h`, `--help`: Display help information
 
 When you are ready to do an initial release, merge `v1-workspace` into `main`.

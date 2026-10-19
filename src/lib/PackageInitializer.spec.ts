@@ -74,6 +74,64 @@ describe('PackageInitializer', () => {
       expect(packageJson.homepage).toBe('https://github.com/limulus/zuul#readme')
     })
 
+    describe('when the package is private', () => {
+      beforeEach(async () => {
+        await new PackageInitializer(pkg).initialize(directory)
+      })
+
+      it('should mark package.json UNLICENSED', () => {
+        expect(readPackageJson(directory).license).toBe('UNLICENSED')
+      })
+
+      it('should publish to GitHub Packages without setting access', () => {
+        expect(readPackageJson(directory).publishConfig).toEqual({
+          registry: 'https://npm.pkg.github.com',
+        })
+      })
+
+      it('should publish from CI with GITHUB_TOKEN', () => {
+        expect(readWorkflow(directory)).toContain('NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}')
+      })
+
+      it('should not create a LICENSE file', () => {
+        expect(fs.existsSync(path.join(directory, 'LICENSE'))).toBe(false)
+        expect(fs.existsSync(path.join(directory, 'LICENSE.mustache'))).toBe(false)
+      })
+    })
+
+    describe.each([
+      ['a public scoped', '@limulus/zuul', true],
+      ['an unscoped', 'zuul', false],
+    ])('when the package is %s package', (_label, name, isPublic) => {
+      beforeEach(async () => {
+        const publicPkg = new Package({ name, description: 'Zuul', public: isPublic })
+        await new PackageInitializer(publicPkg).initialize(directory)
+      })
+
+      it('should mark package.json MIT', () => {
+        expect(readPackageJson(directory).license).toBe('MIT')
+      })
+
+      it('should publish publicly to the npm registry', () => {
+        expect(readPackageJson(directory).publishConfig).toEqual({
+          registry: 'https://registry.npmjs.org',
+          access: 'public',
+        })
+      })
+
+      it('should publish from CI with NPM_TOKEN', () => {
+        expect(readWorkflow(directory)).toContain('NPM_TOKEN: ${{ secrets.NPM_TOKEN }}')
+      })
+
+      it('should create an MIT LICENSE file for the current year', () => {
+        const license = fs.readFileSync(path.join(directory, 'LICENSE'), 'utf8')
+        expect(license).toMatch(/^MIT License\n/)
+        expect(license).toContain(
+          `Copyright (c) ${new Date().getFullYear()} Eric McCarthy\n`
+        )
+      })
+    })
+
     it('should apply node moduleConfig to tsconfig.base.json when target is node', async () => {
       const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
@@ -150,12 +208,17 @@ const makePackage = (): Package => {
 
 interface GeneratedPackageJson {
   repository: { url: string }
+  license: string
   bugs: { url: string }
   homepage: string
+  publishConfig: Record<string, string>
 }
 
 const readPackageJson = (directory: string): GeneratedPackageJson =>
   JSON.parse(fs.readFileSync(path.join(directory, 'package.json'), 'utf8'))
+
+const readWorkflow = (directory: string): string =>
+  fs.readFileSync(path.join(directory, '.github', 'workflows', 'cd.yaml'), 'utf8')
 
 const makeGitRepo = (): string => {
   const directory = temporaryDirectory()

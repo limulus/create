@@ -39,7 +39,7 @@
     "email": "eric@limulus.net",
     "url": "https://limulus.net/"
   },
-  "license": "UNLICENSED",
+  "license": "{{{package.license}}}",
   "bugs": {
     "url": "https://github.com/limulus/{{{package.unscopedName}}}/issues"
   },
@@ -48,7 +48,8 @@
     "tslib": "^2.8.1"
   },
   "publishConfig": {
-    "registry": "{{{ package.publishRegistry }}}"
+    "registry": "{{{ package.publishRegistry }}}"{{^package.isPrivate}},
+    "access": "public"{{/package.isPrivate}}
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",

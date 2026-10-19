@@ -31,6 +31,7 @@ describe('CLI', () => {
           name: 'name',
           description: 'a description',
           target: 'node', // Default target
+          public: false,
         },
       ])
     })
@@ -45,6 +46,22 @@ describe('CLI', () => {
           name: 'name',
           description: 'a description',
           target: 'web',
+          public: false,
+        },
+      ])
+    })
+
+    it('should create a public Package when --public is passed', async () => {
+      process = new ProcessMock(['@limulus/name', 'a description', '--public'])
+      const cli = new CLI(process)
+      await cli.run()
+      const pkgConstructorCall = PackageMock.mock.calls[0]
+      expect(pkgConstructorCall).toEqual([
+        {
+          name: '@limulus/name',
+          description: 'a description',
+          target: 'node',
+          public: true,
         },
       ])
     })
@@ -125,6 +142,7 @@ describe('CLI', () => {
 
       expect(stdoutData).toContain('Usage: create <package-name> <description> [options]')
       expect(stdoutData).toContain('--target <target>')
+      expect(stdoutData).toContain('--public')
       expect(stdoutData).toContain('--help')
 
       expect(process.exit).toHaveBeenCalledWith(0)

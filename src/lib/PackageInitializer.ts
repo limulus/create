@@ -24,9 +24,17 @@ export default class PackageInitializier {
 
     const src = path.resolve(__dirname, '..', '..', 'skel')
     await copy(src, directory, {
+      filter: (source) => this.include(path.relative(src, source.path)),
       rename: (_source, target) => this.rename(target.path),
       transform: (data, source) => this.transform(data, source.path),
     })
+  }
+
+  private include(relativePath: string): boolean {
+    if (relativePath === 'LICENSE.mustache') {
+      return !this.pkg.isPrivate
+    }
+    return true
   }
 
   private rename(path: string): string | undefined {

@@ -16,6 +16,7 @@ interface Process extends NodeJS.EventEmitter {
 interface CLIOptions {
   help: boolean
   target: PackageTarget
+  public: boolean
   positionals: string[]
 }
 
@@ -24,11 +25,14 @@ Usage: create <package-name> <description> [options]
 
 Options:
   --target <target>  Set the module target (node or web) [default: node]
+  --public           Publish a scoped package to npm publicly, MIT licensed
+                     [default: scoped packages go private to GitHub Packages]
   -h, --help         Show this help text
 
 Examples:
   create my-package "A description of my package"
   create my-package "A description of my package" --target web
+  create @limulus/my-package "A description of my package" --public
 `
 
 const isPackageTarget = (value: unknown): value is PackageTarget =>
@@ -45,6 +49,7 @@ const parseOptions = (args: string[]): CLIOptions => {
     options: {
       help: { type: 'boolean', short: 'h', default: false },
       target: { type: 'string', default: 'node' },
+      public: { type: 'boolean', default: false },
     },
     allowPositionals: true,
   })
@@ -53,7 +58,12 @@ const parseOptions = (args: string[]): CLIOptions => {
     throw new Error(`Invalid target: ${values.target}. Must be "web" or "node"`)
   }
 
-  return { help: values.help === true, target: values.target, positionals }
+  return {
+    help: values.help === true,
+    target: values.target,
+    public: values.public === true,
+    positionals,
+  }
 }
 
 export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
@@ -92,7 +102,12 @@ export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
       const [name, description] = options.positionals
 
       try {
-        const pkg = new Package({ name, description, target: options.target })
+        const pkg = new Package({
+          name,
+          description,
+          target: options.target,
+          public: options.public,
+        })
         const initializer = new PackageInitializer(pkg)
         await initializer.initialize(this.process.cwd())
       } catch (error) {
