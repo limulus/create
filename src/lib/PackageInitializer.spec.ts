@@ -39,6 +39,7 @@ describe('PackageInitializer', () => {
     })
 
     describe.each([
+      'AGENTS.md.mustache',
       'README.md.mustache',
       '.gitignore.mustache',
       '.npmrc.mustache',
