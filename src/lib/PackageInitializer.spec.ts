@@ -65,6 +65,15 @@ describe('PackageInitializer', () => {
       )
     })
 
+    it('should build GitHub URLs from the unscoped package name', async () => {
+      const initializer = new PackageInitializer(pkg)
+      await initializer.initialize(directory)
+      const packageJson = readPackageJson(directory)
+      expect(packageJson.repository.url).toBe('git+https://github.com/limulus/zuul.git')
+      expect(packageJson.bugs.url).toBe('https://github.com/limulus/zuul/issues')
+      expect(packageJson.homepage).toBe('https://github.com/limulus/zuul#readme')
+    })
+
     it('should apply node moduleConfig to tsconfig.base.json when target is node', async () => {
       const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
@@ -138,6 +147,15 @@ describe('PackageInitializer', () => {
 const makePackage = (): Package => {
   return new Package({ name: '@limulus/zuul', description: 'There is only zuul' })
 }
+
+interface GeneratedPackageJson {
+  repository: { url: string }
+  bugs: { url: string }
+  homepage: string
+}
+
+const readPackageJson = (directory: string): GeneratedPackageJson =>
+  JSON.parse(fs.readFileSync(path.join(directory, 'package.json'), 'utf8'))
 
 const makeGitRepo = (): string => {
   const directory = temporaryDirectory()
