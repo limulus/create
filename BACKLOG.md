@@ -16,38 +16,38 @@ where it shares the same tooling.
 ### Gate
 
 - `∆Iod` Generate-and-verify check for the skeleton
-  - Generate a project from `skel/` and run its `verify` and `build` in CI. Today no
-    automated check notices a broken template, since `skel/` is excluded from every gate.
+  - Pack `create`, generate each variant from the tarball and run its `verify` and `build`
+    in CI. Today no automated check notices a broken template.
 - `∆V8R` Fail lint on warnings
-  - Prettier violations are warnings, so `eslint .` exits 0 on unformatted code, here and in
-    generated projects. lemmon closed this with `--max-warnings 0`.
+  - Every ESLint warning, Prettier violations included, leaves `eslint .` exiting 0, here
+    and in generated projects. lemmon closed this with `--max-warnings 0`.
 
 ### Releases
 
 - `∆ckk` Release config that honors `!` breaking commits
-  - commitlint accepts `feat!:`, but semantic-release's default preset cannot parse that
-    header and releases nothing. lemmon switched to the conventionalcommits preset.
+  - commitlint accepts a bare `feat!:` header, but semantic-release's default preset cannot
+    parse it and releases nothing. Also corrects the guides' list of commits that release.
 - `∆PF8` Keep specs and mocks out of published tarballs
   - `files` ships all of `src`, spec files included. lemmon excludes `src/**/*.spec.ts` and
     `src/mocks`.
 - `∆i4r` Trusted publishing for public packages
   - Publish to npm through OIDC with provenance, as lemmon does, in place of a long-lived
-    `NPM_TOKEN` secret.
-- `∆D1e` Leave GitHub Packages auth out of public packages
-  - Every project gets an `@unallocate` registry `.npmrc` and a `GPR_READ_TOKEN` step in CI.
-    A public package needs neither, and lemmon runs without them.
+    `NPM_TOKEN` secret, and document the one-time npm setup a new package needs.
+- `∆D1e` Remove unused GitHub Packages read auth
+  - Drop the `@unallocate` registry `.npmrc` and the `GPR_READ_TOKEN` CI step from generated
+    projects and from this repo. Nothing either installs comes from GitHub Packages.
 
 ### Agent setup
 
 - `∆cTZ` Start generated projects with a delto backlog
-  - Ship `BACKLOG.md`, the journal README and an AGENTS.md backlog section. menschen and
-    lemmon each added these by hand.
+  - Run `delto bootstrap` while generating, and add a backlog section to the generated
+    AGENTS.md. menschen and lemmon each set these up by hand.
 - `∆6C4` Ignore agent-local files in generated projects
   - `.claude/settings.local.json`, `.claude/worktrees/` and the delto claim ledger, which
     menschen's `.gitignore` gained one at a time.
 - `∆H5o` Carry proven agent-guide rules into AGENTS.md
-  - Rules the two projects' guides gained from mistakes: negative-test a new check, undo a
-    probe by reversing it, and a push to `main` publishes a release.
+  - Five rules the two projects' guides gained from mistakes, such as negative-testing a new
+    check, undoing a probe by reversing it, and that a push to `main` publishes.
 
 ## General availability as `@limulus/create`
 
@@ -59,11 +59,15 @@ project it generates.
   - Accept any full package name, read the GitHub owner from the repository, and take the
     author as an argument. Today all three are fixed to Eric's own.
 - `∆vIB` Publish this tool as `@limulus/create`
-  - Rename it from `@unallocate/create` and release it for general use.
+  - Rename it from `@unallocate/create`, move the repository to `limulus/create`, and
+    publish it publicly to npm through trusted publishing.
   - needs: `∆P8j`
 - `∆VNW` Print next steps after creating a project
-  - A brief note on stdout or stderr saying what to do next and what to review. Today a
-    successful run prints nothing.
+  - A brief note on stdout or stderr, fitted to the options used, saying what to do next and
+    what to review. Today a successful run prints nothing.
+- `∆oSa` Work on main from the start
+  - Drop the README's `v1-workspace` branch step, so that a new project is worked on
+    directly on `main`.
 
 ## Workspace template
 
@@ -71,9 +75,9 @@ menschen and lemmon both became npm workspace monorepos, each set up by hand. Le
 scaffold that shape directly.
 
 - `∆Oe3` Scaffold an npm workspace monorepo
-  - One root toolchain over `packages/*`, as in lemmon: packages carry no scripts, and a
-    sibling resolves to `src/` through a `source` export condition.
+  - An option of `create` that generates one root toolchain over `packages/*`, as in lemmon,
+    starting with one package. The single-package output stays the default.
 - `∆Van` Release workspace packages together at one version
-  - lemmon's lockstep release: semantic-release sets every package's version, pins the
-    sibling dependencies to it, and publishes them in order.
+  - lemmon's lockstep release: semantic-release sets the version of every package that
+    publishes, pins sibling dependencies to it, and publishes them in order.
   - needs: `∆Oe3`
