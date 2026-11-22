@@ -15,10 +15,6 @@ where it shares the same tooling.
 
 ### Gate
 
-- `∆Iod` Generate-and-verify check for the skeleton
-  - Pack `create`, generate each variant from the tarball and run its `verify` and `build`
-    in CI. Today no automated check notices a broken template.
-
 ### Agent setup
 
 ## General availability as `@limulus/create`
