@@ -37,9 +37,6 @@ project it generates.
 - `∆VNW` Print next steps after creating a project
   - A brief note on stdout or stderr, fitted to the options used, saying what to do next and
     what to review. Today a successful run prints nothing.
-- `∆oSa` Work on main from the start
-  - Drop the README's `v1-workspace` branch step, so that a new project is worked on
-    directly on `main`.
 
 ## Workspace template
 
