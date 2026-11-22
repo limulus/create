@@ -10,8 +10,10 @@ Verified in the code on 2026-11-22:
   copies `skel/` into it. It does not run `npm install`, `git add` or `git commit`, and it
   returns nothing, so it does not report which files it wrote.
 - What a new project needs differs by option. `LICENSE` is generated only for a public
-  package. The publish step uses the `NPM_TOKEN` secret for a public package and the
-  built-in `GITHUB_TOKEN` for a private one.
+  package. A public package publishes through npm trusted publishing and holds no npm token;
+  it needs the one-time npm setup that the README's "Setting up npm for a public package"
+  section describes. A private package publishes with the built-in `GITHUB_TOKEN`.
+- No generated project needs a repository secret set by the user.
 - The generated workflow runs semantic-release on every push, so a releasing commit pushed
   to `main` publishes.
 - `README.md` documents the steps after creation as `npm install`, then merging a
@@ -32,7 +34,8 @@ Eric's decisions, 2026-11-22:
 - The note tells the user to work on `main` from the start, as `∆oSa` decides. It does not
   mention a `v1-workspace` branch.
 
-Which secrets and setup steps exist to be named depends on `∆i4r` and `∆D1e`.
+`∆i4r` and `∆D1e` settled which secrets and setup steps exist to be named, and both have
+landed.
 
 ## Implementation suggestions
 

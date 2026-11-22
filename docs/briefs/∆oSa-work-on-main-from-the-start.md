@@ -12,8 +12,8 @@ Verified in the code that day:
   merge `v1-workspace` into `main` when ready for an initial release. Nothing else in the
   repo names the branch.
 - The generated workflow runs semantic-release on every push.
-- For a public package, once `∆i4r` lands, nothing publishes until the package exists on npm
-  and its trusted publisher is configured.
+- For a public package, since `∆i4r`, nothing publishes until the package exists on npm and
+  its trusted publisher is configured.
 - For a private package the generated workflow passes the built-in `GITHUB_TOKEN` as the
   publish token and has no `permissions` block. Whether a first releasing push publishes
   depends on the repository's default token permissions. This was not tested.

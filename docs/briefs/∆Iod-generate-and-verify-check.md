@@ -12,13 +12,14 @@ Verified in the code on 2026-11-22:
   `AGENTS.md`.
 - CI's `verify` job runs `npm ci`, `npm run verify` and `npm run build` on Node 24 and 26,
   and `publish` waits on it. Nothing in CI generates a project.
-- The published tarball ships `dist` and `skel`. `npm pack` drops `.npmrc` and renames
-  `.gitignore`, which is why those two templates carry a `.mustache` suffix. A new dotfile
-  added to `skel/` without the suffix would be missing from the published tool, and a check
-  run against the checkout would not notice.
+- The published tarball ships `dist` and `skel`. `npm pack` renames `.gitignore`, which is
+  why that template carries a `.mustache` suffix. A dotfile that `npm pack` drops or
+  renames, added to `skel/` without the suffix, would be missing from the published tool,
+  and a check run against the checkout would not notice.
 - The templates render differently by variant. `LICENSE` is left out of a private package.
-  `publishConfig`, the license and the publish secret in `cd.yaml` differ between private
-  and public. The tsconfig module settings differ between `--target node` and `web`.
+  `publishConfig`, the license, and the publish job's permissions and npm token in `cd.yaml`
+  differ between private and public. The tsconfig module settings differ between
+  `--target node` and `web`.
 - `skel/` has no lockfile, so a generated project installs the newest versions in its ranges
   at that moment. The check can go red without a commit to this repo.
 - Everything a generated project installs comes from the public npm registry.
@@ -49,5 +50,5 @@ From the research on 2026-11-22; the planner may drop them.
 - Run it after `npm run build` in the existing `verify` job's Node matrix.
 - Once it lands, point the manual recipe in `AGENTS.md` at it, and say there that CI and
   `verify` differ by this check.
-- After `∆P8j`, generation stops when it cannot read a GitHub owner from the repository. A
-  scratch repository in CI has no `origin` remote, so the check will need the owner flag.
+- Since `∆P8j`, generation stops when it cannot read a GitHub owner from the repository. A
+  scratch repository in CI has no `origin` remote, so the check will need `--owner`.

@@ -19,9 +19,6 @@ where it shares the same tooling.
   - Pack `create`, generate each variant from the tarball and run its `verify` and `build`
     in CI. Today no automated check notices a broken template.
 
-### Releases
-
-
 ### Agent setup
 
 - `∆cTZ` Start generated projects with a delto backlog

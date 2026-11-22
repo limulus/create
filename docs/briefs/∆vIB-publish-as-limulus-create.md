@@ -38,7 +38,7 @@ Eric's decisions, 2026-11-22:
 - `@unallocate/create` is left as it is: no final release, no alias and no deprecation
   message.
 - The first `@limulus/create` release is a new major, 2.0.0.
-- This item needs `∆P8j`, so that the tool no longer writes Eric's own scopes, GitHub
-  account and name into what it generates.
 
-`∆D1e` removes this repo's root `.npmrc` and its `GPR_READ_TOKEN` step.
+`∆P8j` has landed, so the tool no longer writes Eric's own scopes, GitHub account and name
+into what it generates. Its commit carries a `BREAKING CHANGE:` footer. `∆D1e` removed this
+repo's root `.npmrc` and its `GPR_READ_TOKEN` step.
