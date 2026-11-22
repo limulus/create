@@ -49,13 +49,9 @@ Make this a tool anyone can use, published as `@limulus/create`. Today it is
 `@unallocate/create` and writes Eric's own scopes, GitHub account and name into every
 project it generates.
 
-- `∆P8j` Remove built-in `@limulus` and `@unallocate` assumptions
-  - Accept any full package name, read the GitHub owner from the repository, and take the
-    author as an argument. Today all three are fixed to Eric's own.
 - `∆vIB` Publish this tool as `@limulus/create`
   - Rename it from `@unallocate/create`, move the repository to `limulus/create`, and
     publish it publicly to npm through trusted publishing.
-  - needs: `∆P8j`
 - `∆VNW` Print next steps after creating a project
   - A brief note on stdout or stderr, fitted to the options used, saying what to do next and
     what to review. Today a successful run prints nothing.
