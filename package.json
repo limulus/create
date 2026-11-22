@@ -21,6 +21,7 @@
     "prepack": "npm run build",
     "prepare": "is-ci || husky",
     "test": "vitest run --coverage",
+    "test:skel": "node scripts/checkSkeleton.ts",
     "tscc": "node node_modules/typescript-7/bin/tsc --build",
     "verify": "concurrently -c cyan,magenta,blue npm:lint npm:test npm:tscc"
   },

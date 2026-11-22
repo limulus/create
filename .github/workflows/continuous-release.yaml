@@ -26,6 +26,12 @@ jobs:
       # Type-checking no longer emits, so build here to catch diagnostics that only
       # surface during declaration emit (e.g. private names in exported API).
       - run: npm run build
+      # Nothing above runs a generated project's toolchain. This packs the tool as it would
+      # publish, generates every template variant from the tarball, and runs each one's
+      # verify and build. It stays out of `npm run verify`: it needs the network and takes a
+      # minute or more, and the generated projects install the newest versions in their
+      # ranges, so it can fail without a change here.
+      - run: npm run test:skel
 
   publish:
     needs: verify

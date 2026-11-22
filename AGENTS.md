@@ -10,8 +10,9 @@ files against a `Package` instance.
 Two things follow from that, and they are the most common source of mistakes:
 
 - **`skel/` is not this project's source.** It is data. It is excluded from lint, coverage,
-  and typecheck, so nothing here will tell you when a template breaks. Verify template
-  changes by generating a project and running its `verify` (see Common Tasks).
+  and typecheck, so `npm run verify` will not tell you when a template breaks. Verify
+  template changes with `npm run test:skel`, which generates projects and runs their
+  `verify` (see Common Tasks).
 - **Template changes are user-facing.** All changes to files in `skel/` are either features
   or bug fixes, so commits touching them use the `feat` or `fix` prefix — never `chore` or
   `refactor`.
@@ -25,8 +26,9 @@ it fails, generation still finishes with a warning.
 
 ```bash
 # The gate: eslint, vitest with coverage, and tsc. Run it after making changes — it is
-# exactly what pre-push and CI run, so green here means green there. Lint runs with
-# --max-warnings 0, so any ESLint warning fails it.
+# exactly what pre-push runs. Lint runs with --max-warnings 0, so any ESLint warning fails
+# it. CI runs it too, then `npm run build` and `npm run test:skel`, so a change that is
+# green here can still go red there on declaration emit or a broken template.
 npm run verify
 
 # Autofix lint. Run it first, then re-run verify — never concurrently with it, since it
@@ -39,6 +41,11 @@ npx vitest run src/lib/CLI.spec.ts
 npm run build     # emit dist/ via the native compiler
 npm run clean     # remove dist, coverage, *.tsbuildinfo
 npm run tscc      # typecheck only
+
+# Pack, generate every template variant from the tarball, and run each one's verify and
+# build. Needs the network and a git identity, and takes about a minute. It stays out of
+# verify and pre-push by design; CI runs it, and you run it after touching skel/.
+npm run test:skel
 ```
 
 ## TypeScript Setup
@@ -58,12 +65,12 @@ keyword. Prefer inline specifiers over a separate statement:
 
 ### Two tsconfigs
 
-`tsconfig.json` is a single noEmit project over `src/**` (specs included) plus the root
-config files — it is what `tscc`, editors, and typed lint use. `tsconfig.build.json` emits
-`dist/` from non-spec `src/`. Keep them independent: a project reference from
-`tsconfig.json` to the build config would make every typecheck emit `dist/`. The cost of
-this split is that diagnostics raised only during declaration emit surface in `npm run
-build` (CI runs it after `verify`), not in `tscc`.
+`tsconfig.json` is a single noEmit project over `src/**` (specs included), `scripts/**` and
+the root config files — it is what `tscc`, editors, and typed lint use.
+`tsconfig.build.json` emits `dist/` from non-spec `src/`. Keep them independent: a project
+reference from `tsconfig.json` to the build config would make every typecheck emit `dist/`.
+The cost of this split is that diagnostics raised only during declaration emit surface in
+`npm run build` (CI runs it after `verify`), not in `tscc`.
 
 ### Two TypeScript packages
 
@@ -122,6 +129,8 @@ stable API in TS 7.1. Don't "simplify" this arrangement.
 - `src/bin/` — CLI entry points
 - `src/mocks/` — test mocks (not published)
 - `skel/` — templates used to create new projects
+- `scripts/` — `test:skel`, with its decisions in `scripts/lib/` under the same coverage
+  rule as `src/lib/`
 
 ## Gotchas
 
@@ -197,8 +206,14 @@ such files should use either `fix` or `feat` prefixes.
 ## Common Tasks
 
 ```bash
-# Verify a skel/ change end-to-end. Nothing in this repo's own test suite runs the
-# generated project's toolchain, so this is the only way to know a template edit works.
+# Verify a skel/ change end-to-end. Nothing in `npm run verify` runs the generated
+# project's toolchain. This packs the tool as `npm publish` would, generates the private
+# and public, node and web variants from that tarball in fresh git repositories under
+# $TMPDIR, and runs `npm install`, `verify` and `build` in each. It runs every variant, then
+# names each failed variant and step and leaves the projects in place for inspection.
+npm run test:skel
+
+# To poke at one generated project by hand instead:
 npm run build
 mkdir /tmp/scratch && cd /tmp/scratch
 git init . && git commit --allow-empty -m init
