@@ -33,9 +33,6 @@ where it shares the same tooling.
 - `∆i4r` Trusted publishing for public packages
   - Publish to npm through OIDC with provenance, as lemmon does, in place of a long-lived
     `NPM_TOKEN` secret, and document the one-time npm setup a new package needs.
-- `∆D1e` Remove unused GitHub Packages read auth
-  - Drop the `@unallocate` registry `.npmrc` and the `GPR_READ_TOKEN` CI step from generated
-    projects and from this repo. Nothing either installs comes from GitHub Packages.
 
 ### Agent setup
 
