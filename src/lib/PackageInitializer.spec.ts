@@ -194,11 +194,7 @@ describe('PackageInitializer', () => {
       ['public', true],
     ])('when the package is %s', (_label, isPublic) => {
       beforeEach(async () => {
-        const anyPkg = new Package({
-          name: '@limulus/zuul',
-          description: 'Zuul',
-          public: isPublic,
-        })
+        const anyPkg = new Package({ ...packageOptions, public: isPublic })
         await new PackageInitializer(anyPkg).initialize(directory)
       })
 
