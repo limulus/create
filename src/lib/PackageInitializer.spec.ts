@@ -84,6 +84,19 @@ describe('PackageInitializer', () => {
       expect(readPackageJson(directory).author).toEqual(author)
     })
 
+    it('should tell agents in AGENTS.md how to keep the delto backlog', async () => {
+      await new PackageInitializer(pkg).initialize(directory)
+      const guide = fs.readFileSync(path.join(directory, 'AGENTS.md'), 'utf8')
+      expect(guide).toMatch(/^## Backlog & journal \(delto\)$/m)
+      expect(guide).toContain('npx @limulus/delto@1 mint --journal-dir docs/journal')
+    })
+
+    it('should leave writing the backlog to delto', async () => {
+      await new PackageInitializer(pkg).initialize(directory)
+      expect(fs.existsSync(path.join(directory, 'BACKLOG.md'))).toBe(false)
+      expect(fs.existsSync(path.join(directory, 'docs'))).toBe(false)
+    })
+
     it('should pack src without specs or mocks', async () => {
       await new PackageInitializer(pkg).initialize(directory)
       // The template has no mocks of its own, so plant a nested one to prove the exclusion

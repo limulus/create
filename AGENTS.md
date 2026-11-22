@@ -16,6 +16,11 @@ Two things follow from that, and they are the most common source of mistakes:
   or bug fixes, so commits touching them use the `feat` or `fix` prefix — never `chore` or
   `refactor`.
 
+After copying, the CLI runs `npx @limulus/delto@1 bootstrap` in the target to write the
+starter backlog, through the injected `DeltoBootstrap` seam (specs use
+`src/mocks/DeltoBootstrapMock.ts`, never npx). That is generation's one network call; when
+it fails, generation still finishes with a warning.
+
 ## Commands
 
 ```bash
@@ -198,6 +203,6 @@ npm run build
 mkdir /tmp/scratch && cd /tmp/scratch
 git init . && git commit --allow-empty -m init
 git remote add origin https://github.com/example/scratch.git  # the GitHub owner comes from here
-node /path/to/create/dist/bin/create.js scratch "A scratch package"
+node /path/to/create/dist/bin/create.js scratch "A scratch package"  # needs the network
 npm install && npm run verify && npm run build
 ```

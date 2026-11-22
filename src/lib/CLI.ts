@@ -1,6 +1,7 @@
 import { parseArgs } from 'node:util'
 import parseAuthor from 'parse-author'
 
+import DeltoBootstrap from './DeltoBootstrap.ts'
 import GitRepository, { MissingGitInfoError } from './GitRepository.ts'
 import Package, { type PackageAuthor, type PackageTarget } from './Package.ts'
 import PackageInitializer from './PackageInitializer.ts'
@@ -103,7 +104,12 @@ const authorFromOption = (value: string): PackageAuthor => {
   return { name, email, url }
 }
 
-export const inject = ({ GitRepository, Package, PackageInitializer }: InjectOptions) =>
+export const inject = ({
+  DeltoBootstrap,
+  GitRepository,
+  Package,
+  PackageInitializer,
+}: InjectOptions) =>
   class CLI {
     readonly process: Process
 
@@ -158,7 +164,17 @@ export const inject = ({ GitRepository, Package, PackageInitializer }: InjectOpt
         })
         const initializer = new PackageInitializer(pkg)
         await initializer.initialize(this.process.cwd())
-        this.process.stdout.write(formatNextSteps(pkg, nextSteps(pkg)))
+
+        // Bootstrap names AGENTS.md in the journal README only if it finds one, so it runs
+        // after the skeleton is in place. Offline, npx retries for about a minute first.
+        this.process.stdout.write('Setting up the backlog with delto...\n')
+        const backlog = await new DeltoBootstrap().run(this.process.cwd())
+        if (backlog.outcome === 'failed') {
+          this.process.stderr.write(
+            `Warning: delto could not set up the backlog: ${backlog.reason}\n`
+          )
+        }
+        this.process.stdout.write(formatNextSteps(pkg, nextSteps(pkg, backlog.outcome)))
       } catch (error) {
         this.process.stderr.write(`Error: ${(error as Error).message}\n`)
         this.process.exit(1)
@@ -167,10 +183,11 @@ export const inject = ({ GitRepository, Package, PackageInitializer }: InjectOpt
   }
 
 export interface InjectOptions {
+  DeltoBootstrap: typeof DeltoBootstrap
   GitRepository: typeof GitRepository
   Package: typeof Package
   PackageInitializer: typeof PackageInitializer
 }
 
-const CLI = inject({ GitRepository, Package, PackageInitializer })
+const CLI = inject({ DeltoBootstrap, GitRepository, Package, PackageInitializer })
 export default CLI

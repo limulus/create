@@ -15,6 +15,14 @@ Once the project is written, `create` prints a short list of next steps fitted t
 options used: what to review before the first commit, what a release needs, and a reminder
 that a releasing commit pushed to `main` publishes.
 
+Every generated project starts with a [delto](https://github.com/limulus/delto) backlog:
+`create` runs `npx @limulus/delto@1 bootstrap`, which writes `BACKLOG.md` and
+`docs/journal/README.md`, and the generated `AGENTS.md` tells coding agents how to keep
+them. This is `create`'s one network call. When it fails, for example offline, the project
+is still created; `create` warns and lists the bootstrap command among the next steps, to
+run by hand. A repository that already has a `BACKLOG.md` keeps it, and bootstrap is
+skipped.
+
 The package name is the full name, including the scope when the package has one. Any name
 that npm accepts for a new package can be used.
 

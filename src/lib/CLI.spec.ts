@@ -3,12 +3,14 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 import { inject } from './CLI.ts'
 import { MissingGitInfoError } from './GitRepository.ts'
+import DeltoBootstrapMock from '../mocks/DeltoBootstrapMock.ts'
 import GitRepositoryMock from '../mocks/GitRepositoryMock.ts'
 import PackageInitializerMock from '../mocks/PackageInitializerMock.ts'
 import PackageMock from '../mocks/PackageMock.ts'
 import ProcessMock from '../mocks/ProcessMock.ts'
 
 const CLI = inject({
+  DeltoBootstrap: DeltoBootstrapMock,
   GitRepository: GitRepositoryMock,
   Package: PackageMock,
   PackageInitializer: PackageInitializerMock,
@@ -166,6 +168,94 @@ describe('CLI', () => {
       await cli.run()
       expect(await stderrPromise).toContain('Error: fakecwd: must be clean')
       expect(await stdoutPromise).toBe('')
+    })
+
+    describe('after initializing', () => {
+      it('should bootstrap delto in the working directory', async () => {
+        const cli = new CLI(process)
+        await cli.run()
+        const { initialize } = PackageInitializerMock.mock.instances[0]
+        const { run } = DeltoBootstrapMock.mock.instances[0]
+        expect(run).toHaveBeenCalledWith('fakecwd')
+        expect(vi.mocked(initialize).mock.invocationCallOrder[0]).toBeLessThan(
+          vi.mocked(run).mock.invocationCallOrder[0]
+        )
+      })
+
+      it('should say it is setting up the backlog before the next steps', async () => {
+        const cli = new CLI(process)
+        await cli.run()
+        process.stdout.end()
+        const stdoutData = await getStream(process.stdout)
+        expect(stdoutData).toMatch(/^Setting up the backlog with delto\.\.\.\n\nCreated /)
+      })
+
+      describe('when delto sets up the backlog', () => {
+        it('should suggest installing the delto skill and warn of nothing', async () => {
+          const cli = new CLI(process)
+          await cli.run()
+          process.stdout.end()
+          process.stderr.end()
+          expect(await getStream(process.stdout)).toContain('npx skills add limulus/delto')
+          expect(await getStream(process.stderr)).toBe('')
+        })
+      })
+
+      describe('when the repository already had a backlog', () => {
+        beforeEach(() => {
+          vi.mocked(DeltoBootstrapMock.prototype.run).mockResolvedValueOnce({
+            outcome: 'existing',
+          })
+        })
+
+        it('should say so in the next steps and warn of nothing', async () => {
+          const cli = new CLI(process)
+          await cli.run()
+          process.stdout.end()
+          process.stderr.end()
+          const stdoutData = await getStream(process.stdout)
+          expect(stdoutData).toContain('already had a BACKLOG.md')
+          expect(stdoutData).not.toContain('`npx @limulus/delto@1 bootstrap`')
+          expect(await getStream(process.stderr)).toBe('')
+        })
+      })
+
+      describe('when delto cannot set up the backlog', () => {
+        beforeEach(() => {
+          vi.mocked(DeltoBootstrapMock.prototype.run).mockResolvedValueOnce({
+            outcome: 'failed',
+            reason: 'npm error code ECONNREFUSED',
+          })
+        })
+
+        it('should warn with the reason and still finish', async () => {
+          const cli = new CLI(process)
+          await cli.run()
+          process.stderr.end()
+          expect(await getStream(process.stderr)).toBe(
+            'Warning: delto could not set up the backlog: npm error code ECONNREFUSED\n'
+          )
+          expect(process.exit).not.toHaveBeenCalled()
+        })
+
+        it('should give the bootstrap command as a next step', async () => {
+          const cli = new CLI(process)
+          await cli.run()
+          process.stdout.end()
+          const stdoutData = await getStream(process.stdout)
+          expect(stdoutData).toContain('Created @mock/package. Next steps:')
+          expect(stdoutData).toContain('`npx @limulus/delto@1 bootstrap`')
+        })
+      })
+    })
+
+    it('should not bootstrap delto when initializing fails', async () => {
+      vi.mocked(PackageInitializerMock.prototype.initialize).mockRejectedValueOnce(
+        new Error('fakecwd: must be clean')
+      )
+      const cli = new CLI(process)
+      await cli.run()
+      expect(DeltoBootstrapMock).not.toHaveBeenCalled()
     })
 
     it('should display help when --help is passed', async () => {

@@ -104,6 +104,26 @@ stable API in TS 7.1. Don't "simplify" this arrangement.
 - `src/lib/` — core functionality
 - `src/index.ts` — the public API barrel; anything not re-exported here is internal
 
+## Backlog & journal (delto)
+
+`BACKLOG.md` is managed with [delto](https://github.com/limulus/delto); use its agent skill
+(`npx skills add limulus/delto`) when adding or changing items. An item is a `∆xxx` deltoid
+and a one-line title, with at most a two-line description; a `needs:` sub-bullet lists hard
+prerequisites only. Mint new deltoids with
+`npx @limulus/delto@1 mint --journal-dir docs/journal` — never invent them.
+
+The context an item cannot hold is its brief in `docs/briefs/`, named by its deltoid; read
+it before planning. Use `npx @limulus/delto@1 surface` to find eligible work and `claim` an
+item before starting it. When the user accepts the work, run `complete` while the item is
+still in `BACKLOG.md`, fill in the journal entry it scaffolds in `docs/journal/`, fold the
+brief into that entry and delete the brief, then remove the item. Check the backlog with
+`npx @limulus/delto@1 lint --journal-dir docs/journal`.
+
+An item's _why_ is reliable and its _how_ is not: items are written at the end of other
+work, from memory of the code. Verify its technical claims before planning around them.
+Durable lessons from journal entries are distilled into this file; `docs/journal/README.md`
+says how.
+
 ## Reviews
 
 Review a plan before building it and the diff after; they find different things. A review

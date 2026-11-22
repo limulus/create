@@ -12,7 +12,7 @@ const options = {
 
 describe('nextSteps()', () => {
   describe('for any package', () => {
-    const steps = nextSteps(new Package({ ...options, name: '@jane/pkg' }))
+    const steps = nextSteps(new Package({ ...options, name: '@jane/pkg' }), 'created')
 
     it('should start with npm install', () => {
       expect(steps[0]).toContain('npm install')
@@ -36,7 +36,9 @@ describe('nextSteps()', () => {
   })
 
   describe('for a private package', () => {
-    const text = nextSteps(new Package({ ...options, name: '@jane/pkg' })).join('\n')
+    const text = nextSteps(new Package({ ...options, name: '@jane/pkg' }), 'created').join(
+      '\n'
+    )
 
     it('should name GITHUB_TOKEN and GitHub Packages', () => {
       expect(text).toContain('GitHub Packages')
@@ -53,7 +55,7 @@ describe('nextSteps()', () => {
     ['a scoped package created with --public', { name: '@jane/pkg', public: true }],
     ['an unscoped package', { name: 'pkg' }],
   ])('for %s', (_, pkgOptions) => {
-    const text = nextSteps(new Package({ ...options, ...pkgOptions })).join('\n')
+    const text = nextSteps(new Package({ ...options, ...pkgOptions }), 'created').join('\n')
 
     it('should ask for LICENSE to be reviewed', () => {
       expect(text).toMatch(/cd\.yaml, LICENSE\./)
@@ -74,6 +76,55 @@ describe('nextSteps()', () => {
     it('should not name GITHUB_TOKEN or GitHub Packages', () => {
       expect(text).not.toContain('GITHUB_TOKEN')
       expect(text).not.toContain('GitHub Packages')
+    })
+  })
+})
+
+describe('nextSteps() and the backlog', () => {
+  const pkg = new Package({ ...options, name: '@jane/pkg' })
+
+  describe('when delto set up the backlog', () => {
+    const steps = nextSteps(pkg, 'created')
+
+    it('should suggest installing the delto skill right after npm install', () => {
+      expect(steps[1]).toContain('`npx skills add limulus/delto`')
+      expect(steps[1]).toContain('AGENTS.md says how to use them')
+    })
+
+    it('should not ask for the bootstrap to be run', () => {
+      expect(steps.join(' ')).not.toContain('bootstrap')
+    })
+  })
+
+  describe('when delto could not set up the backlog', () => {
+    const steps = nextSteps(pkg, 'failed')
+
+    it('should give the bootstrap command right after npm install', () => {
+      expect(steps[1]).toContain('`npx @limulus/delto@1 bootstrap`')
+    })
+
+    it('should still suggest installing the delto skill', () => {
+      expect(steps[1]).toContain('`npx skills add limulus/delto`')
+    })
+
+    it('should come before the review, so the backlog files are committed too', () => {
+      expect(steps[2]).toMatch(/^Review the generated files/)
+    })
+  })
+
+  describe('when the repository already had a backlog', () => {
+    const steps = nextSteps(pkg, 'existing')
+
+    it('should say the existing BACKLOG.md was left as it was', () => {
+      expect(steps[1]).toContain('already had a BACKLOG.md')
+    })
+
+    it('should suggest installing the delto skill', () => {
+      expect(steps[1]).toContain('`npx skills add limulus/delto`')
+    })
+
+    it('should not ask for the bootstrap to be run', () => {
+      expect(steps.join(' ')).not.toContain('bootstrap')
     })
   })
 })
