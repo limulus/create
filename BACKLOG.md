@@ -34,9 +34,6 @@ project it generates.
 - `∆vIB` Publish this tool as `@limulus/create`
   - Rename it from `@unallocate/create`, move the repository to `limulus/create`, and
     publish it publicly to npm through trusted publishing.
-- `∆VNW` Print next steps after creating a project
-  - A brief note on stdout or stderr, fitted to the options used, saying what to do next and
-    what to review. Today a successful run prints nothing.
 
 ## Workspace template
 
