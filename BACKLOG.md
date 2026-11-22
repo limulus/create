@@ -27,9 +27,6 @@ where it shares the same tooling.
 - `∆cTZ` Start generated projects with a delto backlog
   - Run `delto bootstrap` while generating, and add a backlog section to the generated
     AGENTS.md. menschen and lemmon each set these up by hand.
-- `∆6C4` Ignore agent-local files in generated projects
-  - `.claude/settings.local.json`, `.claude/worktrees/` and the delto claim ledger, which
-    menschen's `.gitignore` gained one at a time.
 - `∆H5o` Carry proven agent-guide rules into AGENTS.md
   - Five rules the two projects' guides gained from mistakes, such as negative-testing a new
     check, undoing a probe by reversing it, and that a push to `main` publishes.
