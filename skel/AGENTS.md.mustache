@@ -117,8 +117,9 @@ format.
 - `docs: msg`: changes to documentation
 - `ci: msg`: build pipeline
 - `chore: msg`: updating dependencies, miscellany
-- Breaking changes to exposed API surfaces must be documented with a footer/trailer. For
-  example:
+- Breaking changes to exposed API surfaces must be documented with a footer/trailer. A `!`
+  after the type or scope (`feat!: msg`) may also flag the change in the header, but only in
+  addition to the footer, never in place of it. For example:
 
   ```
   feat: remove the `POST /api/spline/reticulate` endpoint
@@ -137,5 +138,7 @@ Only certain commit messages will trigger changes to the semantic version of the
 
 - A breaking change will trigger a major version bump, regardless of the prefix
 - The `feat` prefix bumps the minor version
-- The `fix` prefix bumps the patch version
+- The `fix` and `perf` prefixes bump the patch version
+- A revert bumps the patch version. What marks a revert is the `This reverts commit <sha>.`
+  body that `git revert` writes, not a `revert:` prefix on its own
 - All other commit messages have no effect on the version

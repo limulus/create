@@ -25,6 +25,7 @@ describe('PackageInitializer', () => {
       'src/lib/example.ts',
       'tsconfig.json',
       'tsconfig.build.json',
+      '.releaserc.json',
     ])('skel/%s', (file) => {
       it('should be copied into the repo', async () => {
         const skelFilePath = path.join(__dirname, '..', '..', 'skel', file)
@@ -151,6 +152,29 @@ describe('PackageInitializer', () => {
 
       it('should not pass a GitHub Packages read token to CI', () => {
         expect(readWorkflow(directory)).not.toContain('GPR_READ_TOKEN')
+      })
+
+      it('should analyze commits and write release notes with the conventionalcommits preset', () => {
+        const releaserc = JSON.parse(
+          fs.readFileSync(path.join(directory, '.releaserc.json'), 'utf8')
+        ) as { plugins: unknown[] }
+        expect(releaserc.plugins).toEqual(
+          expect.arrayContaining([
+            ['@semantic-release/commit-analyzer', { preset: 'conventionalcommits' }],
+            [
+              '@semantic-release/release-notes-generator',
+              { preset: 'conventionalcommits' },
+            ],
+          ])
+        )
+      })
+
+      // The pair is pinned because preset major 10 breaks release-notes-generator under
+      // semantic-release 25; raise both together after a dry-run proves the new pair.
+      it('should install the compatible conventionalcommits preset beside semantic-release in CI', () => {
+        expect(readWorkflow(directory)).toContain(
+          'npx --yes -p semantic-release@25 -p conventional-changelog-conventionalcommits@9 semantic-release\n'
+        )
       })
     })
 

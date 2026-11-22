@@ -40,9 +40,11 @@ jobs:
       - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
       # semantic-release is intentionally not a devDependency — it is a large tree that
-      # every `npm ci` would pay for while only this job ever runs it. Pin the major here
-      # so the release step stays reproducible.
-      - run: npx --yes semantic-release@25
+      # every `npm ci` would pay for while only this job ever runs it. Pin the majors here
+      # so the release step stays reproducible. semantic-release does not bundle the
+      # conventionalcommits preset that `.releaserc.json` names (the default angular preset
+      # cannot parse `feat!:` headers), so it is installed beside it in the same `npx` call.
+      - run: npx --yes -p semantic-release@25 -p conventional-changelog-conventionalcommits@9 semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
