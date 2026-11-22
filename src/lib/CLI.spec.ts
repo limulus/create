@@ -145,6 +145,29 @@ describe('CLI', () => {
       )
     })
 
+    it('should print the next steps to stdout after initializing', async () => {
+      const cli = new CLI(process)
+      await cli.run()
+      process.stdout.end()
+      const stdoutData = await getStream(process.stdout)
+      expect(stdoutData).toContain('Created @mock/package. Next steps:')
+      expect(stdoutData).toContain('1. Run `npm install`')
+      expect(stdoutData).toContain('GITHUB_TOKEN')
+      expect(process.exit).not.toHaveBeenCalled()
+    })
+
+    it('should not print the next steps when initializing fails', async () => {
+      vi.mocked(PackageInitializerMock.prototype.initialize).mockRejectedValueOnce(
+        new Error('fakecwd: must be clean')
+      )
+      const stdoutPromise = getStream(process.stdout)
+      const stderrPromise = getStream(process.stderr)
+      const cli = new CLI(process)
+      await cli.run()
+      expect(await stderrPromise).toContain('Error: fakecwd: must be clean')
+      expect(await stdoutPromise).toBe('')
+    })
+
     it('should display help when --help is passed', async () => {
       process = new ProcessMock(['--help'])
       vi.spyOn(process, 'cwd').mockReturnValue('fakecwd')

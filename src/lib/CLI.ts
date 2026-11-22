@@ -4,6 +4,7 @@ import parseAuthor from 'parse-author'
 import GitRepository, { MissingGitInfoError } from './GitRepository.ts'
 import Package, { type PackageAuthor, type PackageTarget } from './Package.ts'
 import PackageInitializer from './PackageInitializer.ts'
+import { formatNextSteps, nextSteps } from './nextSteps.ts'
 
 interface Process extends NodeJS.EventEmitter {
   readonly argv: string[]
@@ -157,6 +158,7 @@ export const inject = ({ GitRepository, Package, PackageInitializer }: InjectOpt
         })
         const initializer = new PackageInitializer(pkg)
         await initializer.initialize(this.process.cwd())
+        this.process.stdout.write(formatNextSteps(pkg, nextSteps(pkg)))
       } catch (error) {
         this.process.stderr.write(`Error: ${(error as Error).message}\n`)
         this.process.exit(1)

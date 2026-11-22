@@ -11,6 +11,10 @@ npm init @unallocate @scope/pkgname 'A short description'
 npm install
 ```
 
+Once the project is written, `create` prints a short list of next steps fitted to the
+options used: what to review before the first commit, what a release needs, and a reminder
+that a releasing commit pushed to `main` publishes.
+
 The package name is the full name, including the scope when the package has one. Any name
 that npm accepts for a new package can be used.
 
