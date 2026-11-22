@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process'
+import { execFileSync, spawnSync } from 'node:child_process'
 import fs from 'node:fs'
 import path, { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -90,6 +90,33 @@ describe('PackageInitializer', () => {
       fs.mkdirSync(path.join(directory, 'src', 'mocks', 'deep'), { recursive: true })
       fs.writeFileSync(path.join(directory, 'src', 'mocks', 'deep', 'Deep.ts'), '')
       expect(packedSourceFiles(directory)).toEqual(['src/index.ts', 'src/lib/example.ts'])
+    })
+
+    describe('the generated .gitignore', () => {
+      // Global excludes are disabled so a developer's own ignore rules can't sway the result.
+      // Exit status 0 means ignored and 1 means not ignored; anything else is a git error.
+      const checkIgnore = (file: string): number | null =>
+        spawnSync('git', ['-c', 'core.excludesFile=/dev/null', 'check-ignore', file], {
+          cwd: directory,
+          env: gitlessEnv(),
+          stdio: 'pipe',
+        }).status
+
+      beforeEach(async () => {
+        await new PackageInitializer(pkg).initialize(directory)
+      })
+
+      it.each([
+        '.claude/settings.local.json',
+        '.claude/worktrees/feature/package.json',
+        '.delto-claims.local.jsonl',
+      ])('should ignore the agent-local file %s', (file) => {
+        expect(checkIgnore(file)).toBe(0)
+      })
+
+      it('should still track shared Claude Code settings', () => {
+        expect(checkIgnore('.claude/settings.json')).toBe(1)
+      })
     })
 
     describe('when the package is private', () => {
