@@ -27,9 +27,6 @@ where it shares the same tooling.
 - `∆PF8` Keep specs and mocks out of published tarballs
   - `files` ships all of `src`, spec files included. lemmon excludes `src/**/*.spec.ts` and
     `src/mocks`.
-- `∆i4r` Trusted publishing for public packages
-  - Publish to npm through OIDC with provenance, as lemmon does, in place of a long-lived
-    `NPM_TOKEN` secret, and document the one-time npm setup a new package needs.
 
 ### Agent setup
 
