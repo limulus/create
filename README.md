@@ -7,7 +7,7 @@ Create a TypeScript npm package or project
 From within a fresh and empty git repository whose `origin` remote is on GitHub:
 
 ```sh
-npm init @unallocate @scope/pkgname 'A short description'
+npm init @limulus @scope/pkgname 'A short description'
 npm install
 ```
 
@@ -33,7 +33,7 @@ or without `.git`, or SSH). Without a GitHub `origin`, `create` stops with an er
 after the unscoped package name:
 
 ```sh
-npm init @unallocate @my-github-org/pkgname 'A short description' --owner my-github-org
+npm init @limulus @my-github-org/pkgname 'A short description' --owner my-github-org
 ```
 
 The author in `package.json`, who is also the copyright holder in a public package's
@@ -41,13 +41,13 @@ The author in `package.json`, who is also the copyright holder in a public packa
 instead, in npm's `Name <email> (url)` form, where the email and URL are optional:
 
 ```sh
-npm init @unallocate @scope/pkgname 'A short description' --author 'Jane Doe <jane@example.com> (https://example.com/)'
+npm init @limulus @scope/pkgname 'A short description' --author 'Jane Doe <jane@example.com> (https://example.com/)'
 ```
 
 You can also specify a target platform using the `--target` option:
 
 ```sh
-npm init @unallocate @scope/pkgname 'A short description' --target web
+npm init @limulus @scope/pkgname 'A short description' --target web
 ```
 
 Available targets:
@@ -63,7 +63,7 @@ file is generated), with CI publishing through npm's trusted publishing, so no n
 needed:
 
 ```sh
-npm init @unallocate @scope/pkgname 'A short description' --public
+npm init @limulus @scope/pkgname 'A short description' --public
 ```
 
 Unscoped packages are always public, with or without `--public`.

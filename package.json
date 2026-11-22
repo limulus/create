@@ -1,5 +1,5 @@
 {
-  "name": "@unallocate/create",
+  "name": "@limulus/create",
   "version": "1.0.0",
   "description": "Create a TypeScript npm package or project",
   "type": "module",
@@ -27,7 +27,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/unallocate/create.git"
+    "url": "git+https://github.com/limulus/create.git"
   },
   "author": {
     "name": "Eric McCarthy",
@@ -36,11 +36,12 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/unallocate/create/issues"
+    "url": "https://github.com/limulus/create/issues"
   },
-  "homepage": "https://github.com/unallocate/create#readme",
+  "homepage": "https://github.com/limulus/create#readme",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "dependencies": {
     "@danieldietrich/copy": "^0.4.2",

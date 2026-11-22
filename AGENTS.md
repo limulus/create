@@ -2,10 +2,10 @@
 
 ## Project Overview
 
-`@unallocate/create` is a CLI that scaffolds a new TypeScript package into an existing,
-clean git repository. Everything under `skel/` is the template: `PackageInitializer` copies
-that tree into the target directory, stripping the `.mustache` suffix and rendering those
-files against a `Package` instance.
+`@limulus/create` is a CLI that scaffolds a new TypeScript package into an existing, clean
+git repository. Everything under `skel/` is the template: `PackageInitializer` copies that
+tree into the target directory, stripping the `.mustache` suffix and rendering those files
+against a `Package` instance.
 
 Two things follow from that, and they are the most common source of mistakes:
 
