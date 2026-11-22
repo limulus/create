@@ -21,10 +21,6 @@ where it shares the same tooling.
 
 ### Agent setup
 
-- `∆cTZ` Start generated projects with a delto backlog
-  - Run `delto bootstrap` while generating, and add a backlog section to the generated
-    AGENTS.md. menschen and lemmon each set these up by hand.
-
 ## General availability as `@limulus/create`
 
 Make this a tool anyone can use, published as `@limulus/create`. Today it is
