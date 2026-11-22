@@ -25,10 +25,6 @@ Eric's decisions, 2026-11-22:
 - The `v1-workspace` branch step goes away. A new project is worked on directly on `main`.
 - This applies to every package, private ones included.
 - The next-steps note (`∆VNW`) reflects this.
-
-## Open questions
-
-Not settled by what Eric said; ask before planning around it.
-
-- What stops a private package's first `feat` or `fix` push to `main` from publishing 1.0.0
-  to GitHub Packages, if the repository's token is allowed to publish.
+- Nothing is added to stop a private package's first `feat` or `fix` push to `main` from
+  publishing 1.0.0 to GitHub Packages. That is accepted. The README and the next-steps note
+  warn that a releasing commit on `main` publishes.

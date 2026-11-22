@@ -33,14 +33,10 @@ Eric's decisions, 2026-11-22:
   rewrite bootstrap's output.
 - The generated `AGENTS.md` backlog section covers what the delto spec defines and leaves
   out lemmon's `docs/plans/` convention.
+- When `delto bootstrap` cannot run, for example with no network, `create` still finishes.
+  It warns and tells the user the bootstrap command to run themselves.
 
-The delto fix was written on 2026-11-22: `bootstrap` names `AGENTS.md` when the directory it
-runs in has one, and `CLAUDE.md` otherwise. It was not committed or released that day. This
-item needs a delto release that includes it, and generation must run bootstrap after
-`AGENTS.md` has been copied in.
-
-## Open questions
-
-Not settled by what Eric said; ask before planning around it.
-
-- What generation does when `delto bootstrap` cannot run, for example with no network.
+The delto fix was pushed on 2026-11-22: `bootstrap` names `AGENTS.md` when the directory it
+runs in has one, and `CLAUDE.md` otherwise. Its release, 1.4.0, did not reach npm that day:
+the release run pushed the `v1.4.0` tag and failed before publishing. This item needs that
+release on npm, and generation must run bootstrap after `AGENTS.md` has been copied in.
