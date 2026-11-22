@@ -36,7 +36,6 @@ Eric's decisions, 2026-11-22:
 - When `delto bootstrap` cannot run, for example with no network, `create` still finishes.
   It warns and tells the user the bootstrap command to run themselves.
 
-The delto fix was pushed on 2026-11-22: `bootstrap` names `AGENTS.md` when the directory it
-runs in has one, and `CLAUDE.md` otherwise. Its release, 1.4.0, did not reach npm that day:
-the release run pushed the `v1.4.0` tag and failed before publishing. This item needs that
-release on npm, and generation must run bootstrap after `AGENTS.md` has been copied in.
+The delto fix was released on 2026-11-22 as `@limulus/delto` 1.4.1: `bootstrap` names
+`AGENTS.md` when the directory it runs in has one, and `CLAUDE.md` otherwise. There is no
+1.4.0 on npm. Generation must run bootstrap after `AGENTS.md` has been copied in.
