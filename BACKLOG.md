@@ -21,9 +21,6 @@ where it shares the same tooling.
 
 ### Releases
 
-- `∆PF8` Keep specs and mocks out of published tarballs
-  - `files` ships all of `src`, spec files included. lemmon excludes `src/**/*.spec.ts` and
-    `src/mocks`.
 
 ### Agent setup
 
