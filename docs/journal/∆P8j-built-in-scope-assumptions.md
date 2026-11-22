@@ -74,10 +74,10 @@ the project. Values built in rather than taken from the package being created:
   latest majors require Node `^24.15`, narrower than this package's `>=24`.
 - `Package` validates the GitHub owner and repository name against GitHub's character rules
   and requires a non-empty author name, so a bad `--owner` or a name-less `--author` fails
-  before anything is written.
-  The owner check allows consecutive and trailing hyphens: GitHub refuses them for new
-  accounts, but some older accounts have them, and refusing a real `origin` owner would
-  leave no workaround, since `--owner` goes through the same check.
+  before anything is written. The owner check allows consecutive and trailing hyphens:
+  GitHub refuses them for new accounts, but some older accounts have them, and refusing a
+  real `origin` owner would leave no workaround, since `--owner` goes through the same
+  check.
 - The AGENTS.md "Common Tasks" recipe gained a `git remote add origin` line, since the
   scratch repository it builds would otherwise be refused.
 

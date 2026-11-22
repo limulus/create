@@ -44,8 +44,8 @@ Choices made here:
   to that list, and this item leaves the list untouched.
 - lemmon's "name which gates ran" was dropped: it exists because lemmon has gates outside
   `verify`, and a generated project has one gate.
-- The probe rule names `git restore` alongside `git checkout --`, since both restore
-  the file from the index and so discard unstaged edits the same way.
+- The probe rule names `git restore` alongside `git checkout --`, since both restore the
+  file from the index and so discard unstaged edits the same way.
 - Reviews became its own section rather than a Committing bullet, since it concerns how work
   is checked before any commit; the text is kept as one paragraph.
 

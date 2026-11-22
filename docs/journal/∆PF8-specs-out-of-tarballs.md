@@ -36,8 +36,8 @@ would otherwise build). `create`'s own `package.json` was left alone.
 Verification:
 
 - `create`: `npm run verify` (lint, test, tscc all exit 0; 77 tests, 100% coverage) and
-  `npm run build` exit 0. Removing both negated patterns from the template made the new
-  test fail, listing `src/lib/example.spec.ts` and `src/mocks/deep/Deep.ts`; the probe was
+  `npm run build` exit 0. Removing both negated patterns from the template made the new test
+  fail, listing `src/lib/example.spec.ts` and `src/mocks/deep/Deep.ts`; the probe was
   reversed by restoring the file. `npm pack --dry-run` here still lists
   `skel/src/lib/example.spec.ts` (48 files), so the template ships whole.
 - Generated a private node project (`@limulus/pf8priv`) and a public web project

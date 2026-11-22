@@ -7,21 +7,10 @@ before adding or changing items.
 
 Standing initiative. Keep it first, even when it has no items.
 
-## Skeleton catch-up
-
-menschen and lemmon were generated from this project and then improved by hand. Bring the
-improvements that are not specific to either project back into `skel/`, and into this repo
-where it shares the same tooling.
-
-### Gate
-
-### Agent setup
-
 ## General availability as `@limulus/create`
 
 Make this a tool anyone can use, published as `@limulus/create`. Today it is
-`@unallocate/create` and writes Eric's own scopes, GitHub account and name into every
-project it generates.
+`@unallocate/create`, published privately to GitHub Packages.
 
 - `∆vIB` Publish this tool as `@limulus/create`
   - Rename it from `@unallocate/create`, move the repository to `limulus/create`, and
