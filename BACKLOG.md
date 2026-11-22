@@ -24,9 +24,6 @@ where it shares the same tooling.
 
 ### Releases
 
-- `∆ckk` Release config that honors `!` breaking commits
-  - commitlint accepts a bare `feat!:` header, but semantic-release's default preset cannot
-    parse it and releases nothing. Also corrects the guides' list of commits that release.
 - `∆PF8` Keep specs and mocks out of published tarballs
   - `files` ships all of `src`, spec files included. lemmon excludes `src/**/*.spec.ts` and
     `src/mocks`.
