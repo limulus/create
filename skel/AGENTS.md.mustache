@@ -70,6 +70,12 @@ stable API in TS 7.1. Don't "simplify" this arrangement.
   constructable, so `vi.fn().mockImplementation(() => ({ … }))` throws when the subject
   calls `new`. Supply the shape via `Mock.prototype`, or use a `function` expression when
   the implementation needs to throw
+- **Negative-test a new check.** A test, lint rule or guard claimed to enforce an invariant
+  proves nothing until it has failed: feed it a real violation, watch it fail, then remove
+  the violation
+- **Undo a probe by reversing the probe**, never with `git checkout -- <path>` or
+  `git restore`: those restore the file from the index and silently discard every unstaged
+  edit in it, not just the probe. Copy the file aside before a planned perturbation
 
 ## Code Style Guidelines
 
@@ -98,12 +104,24 @@ stable API in TS 7.1. Don't "simplify" this arrangement.
 - `src/lib/` — core functionality
 - `src/index.ts` — the public API barrel; anything not re-exported here is internal
 
+## Reviews
+
+Review a plan before building it and the diff after; they find different things. A review
+agent gets "do not modify files" in every prompt, and a verifier that must change the tree
+to do its job gets its own git worktree — a verifier sharing the working tree once ran
+`git checkout --` on a file it had probed and threw away the work in it.
+
 ## Committing
 
 Do not run `git commit` unless the user has explicitly asked you to. The user reviews diffs
 before they go in — landing work without a review denies them that step. Finishing a task
 means the working tree is clean of uncommitted _unintended_ changes and `npm run verify`
-passes; staging and committing is a separate, user-initiated step.
+passes — read `git diff` before saying so; staging and committing is a separate,
+user-initiated step.
+
+Do not push `main` unless the user asks, and never publish by hand. CI runs
+`semantic-release` on every push, so pushing a commit that releases (see below) to `main`
+publishes a new version.
 
 ## Commit Message Guidelines
 
