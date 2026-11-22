@@ -16,7 +16,7 @@
     "prebuild": "npm run clean",
     "build": "node node_modules/typescript-7/bin/tsc --build tsconfig.build.json",
     "clean": "del-cli *.tsbuildinfo coverage dist",
-    "lint": "eslint . --config eslint.config.js",
+    "lint": "eslint . --config eslint.config.js --max-warnings 0",
     "lint:fix": "npm run lint -- --fix",
     "prepack": "npm run build",
     "prepare": "is-ci || husky",

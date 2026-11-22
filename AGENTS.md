@@ -20,7 +20,8 @@ Two things follow from that, and they are the most common source of mistakes:
 
 ```bash
 # The gate: eslint, vitest with coverage, and tsc. Run it after making changes — it is
-# exactly what pre-push and CI run, so green here means green there.
+# exactly what pre-push and CI run, so green here means green there. Lint runs with
+# --max-warnings 0, so any ESLint warning fails it.
 npm run verify
 
 # Autofix lint. Run it first, then re-run verify — never concurrently with it, since it
