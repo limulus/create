@@ -74,7 +74,7 @@ stable API in TS 7.1. Don't "simplify" this arrangement.
 - **RSpec-style nesting** — `describe` for subject/context, `it('should …')` for assertions
 - **Avoid `vi.mock()`** — the hand-written mocks in `src/mocks/` are injected through
   `CLI.inject()`, which is why that seam exists. Prefer exercising real dependencies
-- **vitest 4 constructs mock implementations with `new`.** An arrow function is not
+- **vitest 4 and later construct mock implementations with `new`.** An arrow function is not
   constructable, so `vi.fn().mockImplementation(() => ({ … }))` throws when the subject
   calls `new`. Supply the shape via `Mock.prototype`, or use a `function` expression when
   the implementation needs to throw

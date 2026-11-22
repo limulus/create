@@ -65,7 +65,7 @@ stable API in TS 7.1. Don't "simplify" this arrangement.
   No Given/When/Then
 - **Avoid `vi.mock()`** — prefer tests that exercise real dependencies, and mock at the
   network layer (MSW) when you need to isolate from HTTP
-- **vitest 4 constructs mock implementations with `new`.** An arrow function is not
+- **vitest 4 and later construct mock implementations with `new`.** An arrow function is not
   constructable, so `vi.fn().mockImplementation(() => ({ … }))` throws when the subject
   calls `new`. Supply the shape via `Mock.prototype`, or use a `function` expression when
   the implementation needs to throw
