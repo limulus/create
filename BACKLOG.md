@@ -18,9 +18,6 @@ where it shares the same tooling.
 - `∆Iod` Generate-and-verify check for the skeleton
   - Pack `create`, generate each variant from the tarball and run its `verify` and `build`
     in CI. Today no automated check notices a broken template.
-- `∆V8R` Fail lint on warnings
-  - Every ESLint warning, Prettier violations included, leaves `eslint .` exiting 0, here
-    and in generated projects. lemmon closed this with `--max-warnings 0`.
 
 ### Releases
 
