@@ -103,6 +103,12 @@ describe('PackageInitializer', () => {
         expect(readWorkflow(directory)).toContain('NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}')
       })
 
+      it('should not give the publish job trusted publishing permissions', () => {
+        const workflow = readWorkflow(directory)
+        expect(workflow).not.toContain('permissions:')
+        expect(workflow).not.toContain('id-token')
+      })
+
       it('should not create a LICENSE file', () => {
         expect(fs.existsSync(path.join(directory, 'LICENSE'))).toBe(false)
         expect(fs.existsSync(path.join(directory, 'LICENSE.mustache'))).toBe(false)
@@ -124,13 +130,21 @@ describe('PackageInitializer', () => {
 
       it('should publish publicly to the npm registry', () => {
         expect(readPackageJson(directory).publishConfig).toEqual({
-          registry: 'https://registry.npmjs.org',
+          registry: 'https://registry.npmjs.org/',
           access: 'public',
         })
       })
 
-      it('should publish from CI with NPM_TOKEN', () => {
-        expect(readWorkflow(directory)).toContain('NPM_TOKEN: ${{ secrets.NPM_TOKEN }}')
+      it('should publish from CI through trusted publishing, holding no npm token', () => {
+        const workflow = readWorkflow(directory)
+        expect(workflow).not.toContain('NPM_TOKEN')
+        expect(workflow).toMatch(
+          /\n {4}permissions:\n {6}contents: write\b.*\n {6}issues: write\b.*\n {6}pull-requests: write\b.*\n {6}id-token: write\b.*\n {4}steps:\n/
+        )
+      })
+
+      it('should name the workflow file that npm’s trusted publisher must match', () => {
+        expect(readWorkflow(directory)).toContain('`cd.yaml`')
       })
 
       it('should create an MIT LICENSE file for the current year and the author', () => {

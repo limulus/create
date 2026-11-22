@@ -69,12 +69,13 @@ export default class Package {
     return new Date().getFullYear()
   }
 
+  /**
+   * The npm registry URL keeps its trailing slash: `@semantic-release/npm` attempts trusted
+   * publishing only when the registry equals `https://registry.npmjs.org/` exactly, and
+   * otherwise demands an `NPM_TOKEN`.
+   */
   get publishRegistry(): string {
-    return this.isPrivate ? 'https://npm.pkg.github.com' : 'https://registry.npmjs.org'
-  }
-
-  get publishTokenSecretName(): 'GITHUB_TOKEN' | 'NPM_TOKEN' {
-    return this.isPrivate ? 'GITHUB_TOKEN' : 'NPM_TOKEN'
+    return this.isPrivate ? 'https://npm.pkg.github.com' : 'https://registry.npmjs.org/'
   }
 
   get scope(): string {

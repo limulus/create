@@ -46,13 +46,37 @@ Available targets:
 Scoped packages are private by default: they publish to GitHub Packages, are marked
 `UNLICENSED`, and CI publishes with `GITHUB_TOKEN`. Pass `--public` to publish a scoped
 package to the npm registry with `access: public`, under the MIT license (a `LICENSE` file
-is generated), with CI publishing via the `NPM_TOKEN` secret:
+is generated), with CI publishing through npm's trusted publishing, so no npm token is
+needed:
 
 ```sh
 npm init @unallocate @scope/pkgname 'A short description' --public
 ```
 
 Unscoped packages are always public, with or without `--public`.
+
+### Setting up npm for a public package
+
+A public package's publish job in `.github/workflows/cd.yaml` authenticates to npm through
+GitHub's OIDC token (its `id-token: write` permission) and holds no npm token. npm attests
+provenance for each release when the GitHub repository is public. npm has to be told to
+trust that workflow once, before the first release:
+
+1. Create the package on npm, since a trusted publisher can only be added to a package that
+   exists. `npm stage publish`, run from the generated project, creates it without
+   publishing a usable release: it leaves a `0.0.0-stage` placeholder and stages the
+   version in `package.json`, which you then reject with `npm stage reject <stage-id>`.
+   It needs a newer npm than some Node 24 releases bundle; `npx npm@latest stage publish`
+   runs the latest.
+2. In the package's settings on npmjs.com, add a Trusted Publisher for GitHub Actions with
+   the repository's owner and name and the workflow filename `cd.yaml`, leaving the
+   environment empty.
+3. Under the publisher's allowed actions, allow `npm publish`. A publisher created after
+   2026-09-03 allows only `npm stage publish` by default, which would leave every release
+   staged until someone approves it.
+
+npm expires a trusted publisher that has not published within two days of being created,
+so add it shortly before the first release.
 
 ### Options
 

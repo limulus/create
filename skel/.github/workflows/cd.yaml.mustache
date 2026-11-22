@@ -31,6 +31,16 @@ jobs:
     needs: verify
     runs-on: ubuntu-latest
     name: publish package if needed
+<<^package.isPrivate>>
+    # npm's trusted publishing authenticates this job through OIDC, so it holds no npm
+    # token, and npm attests provenance when the repository is public. The package's
+    # trusted publisher on npmjs.com must name this workflow file, `cd.yaml`.
+    permissions:
+      contents: write # the tag and the GitHub release
+      issues: write # comments on the issues a release resolves
+      pull-requests: write # comments on the pull requests a release includes
+      id-token: write # the OIDC token npm exchanges for a publish token
+<</package.isPrivate>>
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -46,4 +56,6 @@ jobs:
       - run: npx --yes -p semantic-release@25 -p conventional-changelog-conventionalcommits@9 semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.<<package.publishTokenSecretName>> }}
+<<#package.isPrivate>>
+          NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+<</package.isPrivate>>

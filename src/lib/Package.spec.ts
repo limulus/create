@@ -192,25 +192,7 @@ describe('Package', () => {
       it('should return npm Registry URL', () => {
         const pkg = makePackage('foo')
         vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
-        expect(pkg.publishRegistry).toBe('https://registry.npmjs.org')
-      })
-    })
-  })
-
-  describe('.publishTokenSecretName', () => {
-    describe('when package is private', () => {
-      it('should return `GITHUB_TOKEN`', () => {
-        const pkg = makePackage('hello')
-        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(true)
-        expect(pkg.publishTokenSecretName).toBe('GITHUB_TOKEN')
-      })
-    })
-
-    describe('when package is public', () => {
-      it('should return `NPM_TOKEN`', () => {
-        const pkg = makePackage('hello')
-        vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
-        expect(pkg.publishTokenSecretName).toBe('NPM_TOKEN')
+        expect(pkg.publishRegistry).toBe('https://registry.npmjs.org/')
       })
     })
   })
