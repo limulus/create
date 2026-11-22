@@ -42,7 +42,6 @@ describe('PackageInitializer', () => {
       'AGENTS.md.mustache',
       'README.md.mustache',
       '.gitignore.mustache',
-      '.npmrc.mustache',
       'tsconfig.base.json.mustache',
     ])('skel/%s', (file) => {
       it('should be copied into the repo without .mustache extension', async () => {
@@ -130,6 +129,28 @@ describe('PackageInitializer', () => {
         expect(license).toContain(
           `Copyright (c) ${new Date().getFullYear()} Eric McCarthy\n`
         )
+      })
+    })
+
+    describe.each([
+      ['private', false],
+      ['public', true],
+    ])('when the package is %s', (_label, isPublic) => {
+      beforeEach(async () => {
+        const anyPkg = new Package({
+          name: '@limulus/zuul',
+          description: 'Zuul',
+          public: isPublic,
+        })
+        await new PackageInitializer(anyPkg).initialize(directory)
+      })
+
+      it('should not create an .npmrc', () => {
+        expect(fs.existsSync(path.join(directory, '.npmrc'))).toBe(false)
+      })
+
+      it('should not pass a GitHub Packages read token to CI', () => {
+        expect(readWorkflow(directory)).not.toContain('GPR_READ_TOKEN')
       })
     })
 

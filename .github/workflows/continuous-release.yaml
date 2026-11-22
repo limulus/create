@@ -17,8 +17,6 @@ jobs:
           cache: 'npm'
       - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GPR_READ_TOKEN }}
       - run: npm run verify
       - uses: actions/upload-artifact@v7
         if: ${{ always() }}
@@ -41,8 +39,6 @@ jobs:
           cache: 'npm'
       - run: bash .github/workflows/set-up-ci.sh
       - run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GPR_READ_TOKEN }}
       # semantic-release is intentionally not a devDependency — it is a large tree that
       # every `npm ci` would pay for while only this job ever runs it. Pin the major here
       # so the release step stays reproducible.
