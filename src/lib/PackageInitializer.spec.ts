@@ -84,6 +84,14 @@ describe('PackageInitializer', () => {
       expect(readPackageJson(directory).author).toEqual(author)
     })
 
+    it('should pack src without specs or mocks', async () => {
+      await new PackageInitializer(pkg).initialize(directory)
+      // The template has no mocks of its own, so plant a nested one to prove the exclusion
+      fs.mkdirSync(path.join(directory, 'src', 'mocks', 'deep'), { recursive: true })
+      fs.writeFileSync(path.join(directory, 'src', 'mocks', 'deep', 'Deep.ts'), '')
+      expect(packedSourceFiles(directory)).toEqual(['src/index.ts', 'src/lib/example.ts'])
+    })
+
     describe('when the package is private', () => {
       beforeEach(async () => {
         await new PackageInitializer(pkg).initialize(directory)
@@ -289,6 +297,20 @@ interface GeneratedPackageJson {
 
 const readPackageJson = (directory: string): GeneratedPackageJson =>
   JSON.parse(fs.readFileSync(path.join(directory, 'package.json'), 'utf8'))
+
+// Scripts are skipped so npm only computes the file list: prepack would build, which
+// needs the generated project installed
+const packedSourceFiles = (directory: string): string[] => {
+  const output = execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], {
+    cwd: directory,
+    encoding: 'utf8',
+  })
+  const [{ files }] = JSON.parse(output) as [{ files: { path: string }[] }]
+  return files
+    .map((file) => file.path)
+    .filter((file) => file.startsWith('src/'))
+    .sort()
+}
 
 const readWorkflow = (directory: string): string =>
   fs.readFileSync(path.join(directory, '.github', 'workflows', 'cd.yaml'), 'utf8')
