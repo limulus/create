@@ -7,7 +7,6 @@ Create a TypeScript npm package or project
 From within a fresh and empty git repository whose `origin` remote is on GitHub:
 
 ```sh
-git checkout -b v1-workspace
 npm init @unallocate @scope/pkgname 'A short description'
 npm install
 ```
@@ -86,4 +85,11 @@ so add it shortly before the first release.
 - `--author <author>`: Author and copyright holder (default: from git config)
 - `-h`, `--help`: Display help information
 
-When you are ready to do an initial release, merge `v1-workspace` into `main`.
+### Releasing
+
+Work on `main` from the start; there is no separate branch to merge for a first release. The
+generated workflow runs semantic-release on every push, so pushing a commit to `main` that
+releases (a `feat` or `fix`, or any commit marked as a breaking change) publishes a new
+version, starting at 1.0.0. A private package can publish to GitHub Packages on its first
+such push, as soon as the repository's default token permissions allow it. A public package
+publishes nothing until its npm setup, described above, is done.
