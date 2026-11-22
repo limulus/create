@@ -27,9 +27,6 @@ where it shares the same tooling.
 - `∆cTZ` Start generated projects with a delto backlog
   - Run `delto bootstrap` while generating, and add a backlog section to the generated
     AGENTS.md. menschen and lemmon each set these up by hand.
-- `∆H5o` Carry proven agent-guide rules into AGENTS.md
-  - Five rules the two projects' guides gained from mistakes, such as negative-testing a new
-    check, undoing a probe by reversing it, and that a push to `main` publishes.
 
 ## General availability as `@limulus/create`
 
