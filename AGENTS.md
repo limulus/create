@@ -178,6 +178,7 @@ such files should use either `fix` or `feat` prefixes.
 npm run build
 mkdir /tmp/scratch && cd /tmp/scratch
 git init . && git commit --allow-empty -m init
+git remote add origin https://github.com/example/scratch.git  # the GitHub owner comes from here
 node /path/to/create/dist/bin/create.js scratch "A scratch package"
 npm install && npm run verify && npm run build
 ```

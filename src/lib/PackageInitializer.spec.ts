@@ -66,13 +66,22 @@ describe('PackageInitializer', () => {
       )
     })
 
-    it('should build GitHub URLs from the unscoped package name', async () => {
-      const initializer = new PackageInitializer(pkg)
+    it('should build GitHub URLs from the package’s GitHub owner and repository', async () => {
+      const initializer = new PackageInitializer(
+        new Package({ ...packageOptions, github: { owner: 'some-org', repo: 'gozer' } })
+      )
       await initializer.initialize(directory)
       const packageJson = readPackageJson(directory)
-      expect(packageJson.repository.url).toBe('git+https://github.com/limulus/zuul.git')
-      expect(packageJson.bugs.url).toBe('https://github.com/limulus/zuul/issues')
-      expect(packageJson.homepage).toBe('https://github.com/limulus/zuul#readme')
+      expect(packageJson.repository.url).toBe('git+https://github.com/some-org/gozer.git')
+      expect(packageJson.bugs.url).toBe('https://github.com/some-org/gozer/issues')
+      expect(packageJson.homepage).toBe('https://github.com/some-org/gozer#readme')
+    })
+
+    it('should write the package’s author into package.json', async () => {
+      const author = { name: 'Dana "Zuul" Barrett', email: 'dana@example.com' }
+      const initializer = new PackageInitializer(new Package({ ...packageOptions, author }))
+      await initializer.initialize(directory)
+      expect(readPackageJson(directory).author).toEqual(author)
     })
 
     describe('when the package is private', () => {
@@ -105,7 +114,7 @@ describe('PackageInitializer', () => {
       ['an unscoped', 'zuul', false],
     ])('when the package is %s package', (_label, name, isPublic) => {
       beforeEach(async () => {
-        const publicPkg = new Package({ name, description: 'Zuul', public: isPublic })
+        const publicPkg = new Package({ ...packageOptions, name, public: isPublic })
         await new PackageInitializer(publicPkg).initialize(directory)
       })
 
@@ -124,12 +133,10 @@ describe('PackageInitializer', () => {
         expect(readWorkflow(directory)).toContain('NPM_TOKEN: ${{ secrets.NPM_TOKEN }}')
       })
 
-      it('should create an MIT LICENSE file for the current year', () => {
+      it('should create an MIT LICENSE file for the current year and the author', () => {
         const license = fs.readFileSync(path.join(directory, 'LICENSE'), 'utf8')
         expect(license).toMatch(/^MIT License\n/)
-        expect(license).toContain(
-          `Copyright (c) ${new Date().getFullYear()} Eric McCarthy\n`
-        )
+        expect(license).toContain(`Copyright (c) ${new Date().getFullYear()} Ivo Shandor\n`)
       })
     })
 
@@ -181,7 +188,7 @@ describe('PackageInitializer', () => {
     it('should apply node moduleConfig to tsconfig.base.json when target is node', async () => {
       const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
-        new Package({ name: '@test/pkg', description: 'Test', target: 'node' })
+        new Package({ ...packageOptions, name: '@test/pkg', target: 'node' })
       )
       await initializer.initialize(directory)
       const tsConfig = fs.readFileSync(tsConfigDest).toString()
@@ -193,7 +200,7 @@ describe('PackageInitializer', () => {
     it('should apply web moduleConfig to tsconfig.base.json when target is web', async () => {
       const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
-        new Package({ name: '@test/pkg', description: 'Test', target: 'web' })
+        new Package({ ...packageOptions, name: '@test/pkg', target: 'web' })
       )
       await initializer.initialize(directory)
       const tsConfig = fs.readFileSync(tsConfigDest).toString()
@@ -248,12 +255,18 @@ describe('PackageInitializer', () => {
   })
 })
 
-const makePackage = (): Package => {
-  return new Package({ name: '@limulus/zuul', description: 'There is only zuul' })
+const packageOptions = {
+  name: '@limulus/zuul',
+  description: 'There is only zuul',
+  author: { name: 'Ivo Shandor' },
+  github: { owner: 'limulus' },
 }
+
+const makePackage = (): Package => new Package(packageOptions)
 
 interface GeneratedPackageJson {
   repository: { url: string }
+  author: Record<string, string>
   license: string
   bugs: { url: string }
   homepage: string

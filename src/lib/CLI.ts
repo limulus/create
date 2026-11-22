@@ -1,6 +1,8 @@
 import { parseArgs } from 'node:util'
+import parseAuthor from 'parse-author'
 
-import Package, { type PackageTarget } from './Package.ts'
+import GitRepository, { MissingGitInfoError } from './GitRepository.ts'
+import Package, { type PackageAuthor, type PackageTarget } from './Package.ts'
 import PackageInitializer from './PackageInitializer.ts'
 
 interface Process extends NodeJS.EventEmitter {
@@ -17,22 +19,32 @@ interface CLIOptions {
   help: boolean
   target: PackageTarget
   public: boolean
+  owner?: string
+  author?: string
   positionals: string[]
 }
 
 const helpText = `
 Usage: create <package-name> <description> [options]
 
+The package name is the full name, including the scope if it has one. The GitHub
+owner and repository in package.json come from the origin remote.
+
 Options:
   --target <target>  Set the module target (node or web) [default: node]
   --public           Publish a scoped package to npm publicly, MIT licensed
                      [default: scoped packages go private to GitHub Packages]
+  --owner <owner>    GitHub owner, for when there is no GitHub origin remote;
+                     the repository is then named after the unscoped package name
+  --author <author>  Author and copyright holder, as "Name <email> (url)"
+                     [default: user.name and user.email from git config]
   -h, --help         Show this help text
 
 Examples:
   create my-package "A description of my package"
   create my-package "A description of my package" --target web
-  create @limulus/my-package "A description of my package" --public
+  create @my-scope/my-package "A description of my package" --public
+  create @my-scope/my-package "A description" --owner my-org --author "Jane Doe"
 `
 
 const isPackageTarget = (value: unknown): value is PackageTarget =>
@@ -50,6 +62,8 @@ const parseOptions = (args: string[]): CLIOptions => {
       help: { type: 'boolean', short: 'h', default: false },
       target: { type: 'string', default: 'node' },
       public: { type: 'boolean', default: false },
+      owner: { type: 'string' },
+      author: { type: 'string' },
     },
     allowPositionals: true,
   })
@@ -62,11 +76,33 @@ const parseOptions = (args: string[]): CLIOptions => {
     help: values.help === true,
     target: values.target,
     public: values.public === true,
+    owner: values.owner,
+    author: values.author,
     positionals,
   }
 }
 
-export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
+/**
+ * Turns a missing piece of git information into an error that names the option that
+ * supplies it by hand.
+ */
+const suggestOption = async <T>(lookup: Promise<T>, option: string): Promise<T> => {
+  try {
+    return await lookup
+  } catch (error) {
+    if (error instanceof MissingGitInfoError) {
+      throw new Error(`${error.message}; pass ${option} to supply it`)
+    }
+    throw error
+  }
+}
+
+const authorFromOption = (value: string): PackageAuthor => {
+  const { name = '', email, url } = parseAuthor(value)
+  return { name, email, url }
+}
+
+export const inject = ({ GitRepository, Package, PackageInitializer }: InjectOptions) =>
   class CLI {
     readonly process: Process
 
@@ -102,9 +138,20 @@ export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
       const [name, description] = options.positionals
 
       try {
+        const repository = new GitRepository(this.process.cwd())
+        const github =
+          options.owner === undefined
+            ? await suggestOption(repository.githubRepository(), '--owner <owner>')
+            : { owner: options.owner }
+        const author =
+          options.author === undefined
+            ? await suggestOption(repository.author(), '--author <author>')
+            : authorFromOption(options.author)
         const pkg = new Package({
           name,
           description,
+          author,
+          github,
           target: options.target,
           public: options.public,
         })
@@ -118,9 +165,10 @@ export const inject = ({ Package, PackageInitializer }: InjectOptions) =>
   }
 
 export interface InjectOptions {
+  GitRepository: typeof GitRepository
   Package: typeof Package
   PackageInitializer: typeof PackageInitializer
 }
 
-const CLI = inject({ Package, PackageInitializer })
+const CLI = inject({ GitRepository, Package, PackageInitializer })
 export default CLI

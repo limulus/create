@@ -9,6 +9,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import GitRepository, {
   assertDirectoryIsGitRepository,
   assertGitRepositoryIsClean,
+  MissingGitInfoError,
 } from './GitRepository.ts'
 
 let directory: string
@@ -39,49 +40,93 @@ describe('GitRepository', () => {
     })
   })
 
-  describe('.githubOwner()', () => {
-    it('should throw when orgin remote is not set', async () => {
+  describe('.githubRepository()', () => {
+    it('should throw MissingGitInfoError when the origin remote is not set', async () => {
       const repository = new GitRepository(directory)
-      await expect(async () => await repository.githubOwner()).rejects.toThrow(
-        /remote 'origin' does not exist/i
-      )
+      const lookup = repository.githubRepository()
+      await expect(lookup).rejects.toThrow(MissingGitInfoError)
+      await expect(lookup).rejects.toThrow(/remote 'origin' does not exist/i)
     })
 
-    it('should throw if origin is not a GitHub URL', async () => {
+    it.each([
+      'https://example.com/foo/bar.git',
+      'https://gitlab.com/foo/bar.git',
+      'foo/bar',
+      'github:foo/bar',
+    ])('should throw MissingGitInfoError if origin is %s', async (url) => {
       const repository = new GitRepository(directory)
-      setOriginRemote(directory, 'https://example.com/foo/bar.git')
-      await expect(async () => await repository.githubOwner()).rejects.toThrow(
-        /not a github url/i
-      )
+      setOriginRemote(directory, url)
+      const lookup = repository.githubRepository()
+      await expect(lookup).rejects.toThrow(MissingGitInfoError)
+      await expect(lookup).rejects.toThrow(`origin url "${url}" is not a GitHub URL`)
     })
 
-    it('should return the owner of the GitHub repo', async () => {
+    it.each([
+      'https://github.com/some-owner/some.repo.git',
+      'https://github.com/some-owner/some.repo',
+      'git@github.com:some-owner/some.repo.git',
+      'ssh://git@github.com/some-owner/some.repo.git',
+    ])('should return the owner and repository of %s', async (url) => {
       const repository = new GitRepository(directory)
-      setOriginRemote(directory, 'https://github.com/unallocate/nonexist.git')
-      expect(await repository.githubOwner()).toBe('unallocate')
+      setOriginRemote(directory, url)
+      expect(await repository.githubRepository()).toEqual({
+        owner: 'some-owner',
+        repo: 'some.repo',
+      })
+    })
+
+    it('should throw a plain error when the directory is not a git repository', async () => {
+      const repository = new GitRepository(directory)
+      removeDotGitDirectory(directory)
+      const lookup = repository.githubRepository()
+      await expect(lookup).rejects.toThrow(/must be a git repository/)
+      await expect(lookup).rejects.not.toThrow(MissingGitInfoError)
     })
   })
 
-  describe('.githubRepoName()', () => {
-    it('should throw when origin remote is not set', async () => {
-      const repository = new GitRepository(directory)
-      await expect(async () => await repository.githubRepoName()).rejects.toThrow(
-        /remote 'origin' does not exist/i
-      )
+  describe('.author()', () => {
+    beforeEach(() => {
+      // Hide the machine's own global config, so only this repository's counts. simple-git
+      // drops ambient GIT_* variables such as GIT_CONFIG_GLOBAL, so move HOME instead.
+      const home = temporaryDirectory()
+      vi.stubEnv('HOME', home)
+      vi.stubEnv('XDG_CONFIG_HOME', home)
     })
 
-    it('should throw if origin is not a GitHub URL', async () => {
+    afterEach(() => vi.unstubAllEnvs())
+
+    it('should return user.name and user.email from git config', async () => {
+      setConfig(directory, 'user.name', 'Jane Doe')
+      setConfig(directory, 'user.email', 'jane@example.com')
       const repository = new GitRepository(directory)
-      setOriginRemote(directory, 'https://example.com/foo/bar.git')
-      await expect(async () => await repository.githubRepoName()).rejects.toThrow(
-        /not a github url/i
-      )
+      expect(await repository.author()).toEqual({
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+      })
     })
 
-    it('should return the GitHub repo name', async () => {
+    it('should leave out the email when user.email is not set', async () => {
+      setConfig(directory, 'user.name', 'Jane Doe')
       const repository = new GitRepository(directory)
-      setOriginRemote(directory, 'https://github.com/unallocate/nonexist.git')
-      expect(await repository.githubRepoName()).toBe('nonexist')
+      expect(await repository.author()).toEqual({ name: 'Jane Doe' })
+    })
+
+    it('should leave out the email when user.email is blank', async () => {
+      setConfig(directory, 'user.name', 'Jane Doe')
+      setConfig(directory, 'user.email', ' ')
+      const repository = new GitRepository(directory)
+      expect(await repository.author()).toEqual({ name: 'Jane Doe' })
+    })
+
+    it.each([
+      ['not set', undefined],
+      ['blank', ''],
+    ])('should throw MissingGitInfoError when user.name is %s', async (_label, value) => {
+      if (value !== undefined) setConfig(directory, 'user.name', value)
+      const repository = new GitRepository(directory)
+      const lookup = repository.author()
+      await expect(lookup).rejects.toThrow(MissingGitInfoError)
+      await expect(lookup).rejects.toThrow('git config user.name is not set')
     })
   })
 })
@@ -145,6 +190,11 @@ const createTempGitRepo = (): string => {
 const setOriginRemote = (directory: string, url: string): void => {
   const execGit = makeExecGit(directory)
   execGit('remote', 'add', 'origin', url)
+}
+
+const setConfig = (directory: string, key: string, value: string): void => {
+  const execGit = makeExecGit(directory)
+  execGit('config', key, value)
 }
 
 const finanlgeRepoIntoMergeState = (directory: string): void => {

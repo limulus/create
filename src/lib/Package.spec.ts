@@ -1,6 +1,13 @@
 import { vi, describe, it, expect, afterEach } from 'vitest'
 
-import Package from './Package.ts'
+import Package, { type PackageAuthor } from './Package.ts'
+
+const packageOptions = {
+  name: '@limulus/zuul',
+  description: 'There is only zuul',
+  author: { name: 'Jane Doe' },
+  github: { owner: 'limulus' },
+}
 
 describe('Package', () => {
   describe('constructor()', () => {
@@ -10,10 +17,60 @@ describe('Package', () => {
       expect(pkg).toHaveProperty('description', 'There is only zuul')
     })
 
-    it('should throw if and only if name is invalid', () => {
-      expect(() => makePackage('Hello_World')).toThrow(/package name/)
+    it('should throw if and only if name is invalid for a new npm package', () => {
+      expect(() => makePackage('Hello_World')).toThrow(
+        'Hello_World: invalid package name (name can no longer contain capital letters)'
+      )
+      expect(() => makePackage('foo bar')).toThrow(
+        /invalid package name \(name can only contain URL-friendly characters\)/
+      )
       expect(() => makePackage('foo-bar')).not.toThrow()
       expect(() => makePackage('@foo/bar-baz')).not.toThrow()
+      expect(() => makePackage('@foo/bar.js')).not.toThrow()
+      expect(() => makePackage('1st_place')).not.toThrow()
+    })
+
+    it('should keep only the known author fields', () => {
+      const pkg = new Package({
+        ...packageOptions,
+        author: { name: 'Jane', email: 'j@example.com', extra: 'x' } as PackageAuthor,
+      })
+      expect(pkg.author).toEqual({ name: 'Jane', email: 'j@example.com' })
+    })
+
+    it('should throw when the author has no name', () => {
+      expect(
+        () => new Package({ ...packageOptions, author: { name: ' ', email: 'j@x.org' } })
+      ).toThrow('author: a name is required')
+    })
+
+    it('should use the given GitHub owner and repository', () => {
+      const pkg = new Package({ ...packageOptions, github: { owner: 'o', repo: 'r.js' } })
+      expect(pkg.github).toEqual({ owner: 'o', repo: 'r.js' })
+    })
+
+    it('should name the GitHub repository after the unscoped name by default', () => {
+      const pkg = new Package({ ...packageOptions, github: { owner: 'some-org' } })
+      expect(pkg.github).toEqual({ owner: 'some-org', repo: 'zuul' })
+    })
+
+    it('should throw if and only if the GitHub owner is invalid', () => {
+      const withOwner = (owner: string) => () =>
+        new Package({ ...packageOptions, github: { owner } })
+      expect(withOwner('-bad')).toThrow('-bad: invalid GitHub owner')
+      expect(withOwner('a/b')).toThrow(/invalid GitHub owner/)
+      expect(withOwner('a.b')).toThrow(/invalid GitHub owner/)
+      expect(withOwner('')).toThrow(/invalid GitHub owner/)
+      expect(withOwner('Some-Org2')).not.toThrow()
+      expect(withOwner('legacy--name-')).not.toThrow()
+    })
+
+    it('should throw if and only if the GitHub repository name is invalid', () => {
+      const withRepo = (repo: string) => () =>
+        new Package({ ...packageOptions, github: { owner: 'o', repo } })
+      expect(withRepo('a/b')).toThrow('a/b: invalid GitHub repository name')
+      expect(withRepo('')).toThrow(/invalid GitHub repository name/)
+      expect(withRepo('My_repo.js-2')).not.toThrow()
     })
 
     it('should default to node target when not specified', () => {
@@ -40,8 +97,7 @@ describe('Package', () => {
       expect(
         () =>
           new Package({
-            name: '@limulus/zuul',
-            description: 'Test',
+            ...packageOptions,
             target: 'invalid' as any,
           })
       ).toThrow(/invalid target/)
@@ -86,6 +142,28 @@ describe('Package', () => {
         vi.spyOn(pkg, 'isPrivate', 'get').mockReturnValue(false)
         expect(pkg.license).toBe('MIT')
       })
+    })
+  })
+
+  describe('.authorJson', () => {
+    it('should render the author as package.json-indented JSON', () => {
+      const pkg = new Package({
+        ...packageOptions,
+        author: { name: 'Jane "JD" Doe', email: 'j@example.com', url: 'https://x.org' },
+      })
+      expect(pkg.authorJson).toBe(
+        '{\n' +
+          '    "name": "Jane \\"JD\\" Doe",\n' +
+          '    "email": "j@example.com",\n' +
+          '    "url": "https://x.org"\n' +
+          '  }'
+      )
+    })
+
+    it('should leave out fields the author does not have', () => {
+      const pkg = makePackage()
+      expect(JSON.parse(pkg.authorJson)).toEqual({ name: 'Jane Doe' })
+      expect(pkg.authorJson).not.toContain('email')
     })
   })
 
@@ -199,8 +277,8 @@ const makePackage = (
   isPublic?: boolean
 ): Package => {
   return new Package({
+    ...packageOptions,
     name,
-    description: 'There is only zuul',
     target,
     public: isPublic,
   })

@@ -32,18 +32,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/limulus/{{{package.unscopedName}}}.git"
+    "url": "git+https://github.com/{{{package.github.owner}}}/{{{package.github.repo}}}.git"
   },
-  "author": {
-    "name": "Eric McCarthy",
-    "email": "eric@limulus.net",
-    "url": "https://limulus.net/"
-  },
+  "author": {{{package.authorJson}}},
   "license": "{{{package.license}}}",
   "bugs": {
-    "url": "https://github.com/limulus/{{{package.unscopedName}}}/issues"
+    "url": "https://github.com/{{{package.github.owner}}}/{{{package.github.repo}}}/issues"
   },
-  "homepage": "https://github.com/limulus/{{{package.unscopedName}}}#readme",
+  "homepage": "https://github.com/{{{package.github.owner}}}/{{{package.github.repo}}}#readme",
   "publishConfig": {
     "registry": "{{{ package.publishRegistry }}}"{{^package.isPrivate}},
     "access": "public"{{/package.isPrivate}}
