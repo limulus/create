@@ -56,15 +56,28 @@ export interface Packed {
   files: { path: string }[]
 }
 
+const isPacked = (value: unknown): value is Packed =>
+  typeof value === 'object' &&
+  value !== null &&
+  'filename' in value &&
+  typeof value.filename === 'string' &&
+  'files' in value &&
+  Array.isArray(value.files)
+
 /**
  * The one package `npm pack --json` reported packing. Throws when the report is not a
  * single package, since every later step depends on that tarball.
+ *
+ * npm 12 reports an object keyed by package name where earlier majors report a list, so
+ * either shape is read.
  */
 export function packedPackage(report: unknown): Packed {
-  if (!Array.isArray(report) || report.length !== 1) {
+  const packages: unknown[] = Object.values(report ?? {})
+  const [packed] = packages
+  if (packages.length !== 1 || !isPacked(packed)) {
     throw new Error(`npm pack reported ${JSON.stringify(report)}, not one package`)
   }
-  return report[0] as Packed
+  return packed
 }
 
 /**

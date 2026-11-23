@@ -349,7 +349,10 @@ const packedSourceFiles = (directory: string): string[] => {
     cwd: directory,
     encoding: 'utf8',
   })
-  const [{ files }] = JSON.parse(output) as [{ files: { path: string }[] }]
+  // npm 12 reports an object keyed by package name where earlier majors report a list
+  const [{ files }] = Object.values(
+    JSON.parse(output) as Record<string, { files: { path: string }[] }>
+  )
   return files
     .map((file) => file.path)
     .filter((file) => file.startsWith('src/'))

@@ -63,6 +63,24 @@ describe('packedPackage()', () => {
     expect(packedPackage([packed])).toBe(packed)
   })
 
+  it('should return the single package of a report keyed by name, as npm 12 writes it', () => {
+    expect(packedPackage({ '@scope/create': packed })).toBe(packed)
+  })
+
+  it('should throw when the report keyed by name holds more than one package', () => {
+    expect(() => packedPackage({ one: packed, two: packed })).toThrow(/not one package/)
+  })
+
+  it('should throw when the report is null', () => {
+    expect(() => packedPackage(null)).toThrow('npm pack reported null, not one package')
+  })
+
+  it('should throw when the one entry lacks a file list', () => {
+    expect(() => packedPackage([{ filename: 'scope-create-1.2.3.tgz' }])).toThrow(
+      /not one package/
+    )
+  })
+
   it('should throw when the report holds no package', () => {
     expect(() => packedPackage([])).toThrow('npm pack reported [], not one package')
   })
