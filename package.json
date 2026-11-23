@@ -54,7 +54,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.2.4",
     "@commitlint/config-conventional": "^21.2.4",
-    "@limulus/eslint-config": "^6.2.0",
+    "@limulus/eslint-config": "^6.2.1",
     "@types/hosted-git-info": "^3.0.5",
     "@types/mustache": "^4.2.6",
     "@types/node": "^24.19.2",
