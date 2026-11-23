@@ -78,15 +78,19 @@ trust that workflow once, before the first release:
 1. Create the package on npm, since a trusted publisher can only be added to a package that
    exists. `npm stage publish`, run from the generated project, creates it without
    publishing a usable release: it leaves a `0.0.0-stage` placeholder and stages the
-   version in `package.json`, which you then reject with `npm stage reject <stage-id>`.
-   It needs a newer npm than some Node 24 releases bundle; `npx npm@latest stage publish`
-   runs the latest.
+   version in `package.json`. Leave that version staged until the first release is out,
+   because rejecting the only staged version removes the package again. It needs you
+   logged in to npm, and a newer npm than some Node 24 releases bundle;
+   `npx npm@latest stage publish` runs the latest.
 2. In the package's settings on npmjs.com, add a Trusted Publisher for GitHub Actions with
    the repository's owner and name and the workflow filename `cd.yaml`, leaving the
    environment empty.
-3. Under the publisher's allowed actions, allow `npm publish`. A publisher created after
-   2026-09-03 allows only `npm stage publish` by default, which would leave every release
-   staged until someone approves it.
+3. Under the publisher's allowed actions, allow `npm publish`, which is how the workflow
+   releases. A publisher created after 2026-09-03 allows only `npm stage publish` by
+   default, and npmjs.com marks direct publishing as not recommended because it leaves no
+   person between CI and the registry.
+4. Once the first release is on npm, which can take a few minutes after the workflow
+   finishes, reject the staged version with `npm stage reject <stage-id>`.
 
 npm expires a trusted publisher that has not published within two days of being created,
 so add it shortly before the first release.
