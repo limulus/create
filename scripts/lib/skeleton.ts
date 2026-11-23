@@ -33,8 +33,9 @@ export const VARIANTS: readonly Variant[] = [
 
 /**
  * The scratch repositories have no `origin` remote, so the GitHub owner is named by hand.
+ * It matches the variants' scope, which `create` requires of a private package.
  */
-export const OWNER = 'scratch-owner'
+export const OWNER = 'scratch'
 
 /** The arguments `create` receives for a variant. */
 export function createArguments(variant: Variant): string[] {

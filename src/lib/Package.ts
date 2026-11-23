@@ -129,6 +129,17 @@ export default class Package {
       throw new Error(`${this.github.repo}: invalid GitHub repository name`)
     }
 
+    // The generated workflow publishes a private package with the repository's own token,
+    // and GitHub Packages accepts from it only the scope named after the repository's owner.
+    const ownerScope = `@${this.github.owner.toLowerCase()}`
+    if (this.isPrivate && this.scope !== ownerScope) {
+      throw new Error(
+        `${this.name}: a private package publishes to GitHub Packages, which accepts only ` +
+          `the scope ${ownerScope} from a repository owned by ${this.github.owner}; ` +
+          'use that scope, or make the package public'
+      )
+    }
+
     const validTargets: PackageTarget[] = ['node', 'web']
     if (!validTargets.includes(this.target)) {
       throw new Error(`${this.target}: invalid target type`)

@@ -25,8 +25,8 @@ describe('Package', () => {
         /invalid package name \(name can only contain URL-friendly characters\)/
       )
       expect(() => makePackage('foo-bar')).not.toThrow()
-      expect(() => makePackage('@foo/bar-baz')).not.toThrow()
-      expect(() => makePackage('@foo/bar.js')).not.toThrow()
+      expect(() => makePackage('@limulus/bar-baz')).not.toThrow()
+      expect(() => makePackage('@limulus/bar.js')).not.toThrow()
       expect(() => makePackage('1st_place')).not.toThrow()
     })
 
@@ -45,18 +45,22 @@ describe('Package', () => {
     })
 
     it('should use the given GitHub owner and repository', () => {
-      const pkg = new Package({ ...packageOptions, github: { owner: 'o', repo: 'r.js' } })
+      const pkg = new Package({
+        ...packageOptions,
+        name: 'zuul',
+        github: { owner: 'o', repo: 'r.js' },
+      })
       expect(pkg.github).toEqual({ owner: 'o', repo: 'r.js' })
     })
 
     it('should name the GitHub repository after the unscoped name by default', () => {
-      const pkg = new Package({ ...packageOptions, github: { owner: 'some-org' } })
-      expect(pkg.github).toEqual({ owner: 'some-org', repo: 'zuul' })
+      const pkg = new Package({ ...packageOptions, github: { owner: 'limulus' } })
+      expect(pkg.github).toEqual({ owner: 'limulus', repo: 'zuul' })
     })
 
     it('should throw if and only if the GitHub owner is invalid', () => {
       const withOwner = (owner: string) => () =>
-        new Package({ ...packageOptions, github: { owner } })
+        new Package({ ...packageOptions, name: 'zuul', github: { owner } })
       expect(withOwner('-bad')).toThrow('-bad: invalid GitHub owner')
       expect(withOwner('a/b')).toThrow(/invalid GitHub owner/)
       expect(withOwner('a.b')).toThrow(/invalid GitHub owner/)
@@ -67,10 +71,44 @@ describe('Package', () => {
 
     it('should throw if and only if the GitHub repository name is invalid', () => {
       const withRepo = (repo: string) => () =>
-        new Package({ ...packageOptions, github: { owner: 'o', repo } })
+        new Package({ ...packageOptions, github: { owner: 'limulus', repo } })
       expect(withRepo('a/b')).toThrow('a/b: invalid GitHub repository name')
       expect(withRepo('')).toThrow(/invalid GitHub repository name/)
       expect(withRepo('My_repo.js-2')).not.toThrow()
+    })
+
+    describe('when the scope is not the GitHub owner’s', () => {
+      const withName = (name: string, isPublic?: boolean) => () =>
+        new Package({
+          ...packageOptions,
+          name,
+          github: { owner: 'Some-Org' },
+          public: isPublic,
+        })
+
+      it('should throw for a private package, which GitHub Packages would refuse', () => {
+        expect(withName('@limulus/zuul')).toThrow(
+          '@limulus/zuul: a private package publishes to GitHub Packages, which accepts ' +
+            'only the scope @some-org from a repository owned by Some-Org; use that scope, ' +
+            'or make the package public'
+        )
+      })
+
+      it('should not throw for a public package, which publishes to npm', () => {
+        expect(withName('@limulus/zuul', true)).not.toThrow()
+        expect(withName('zuul')).not.toThrow()
+      })
+    })
+
+    it('should match a private package’s scope to the GitHub owner without regard to case', () => {
+      expect(
+        () =>
+          new Package({
+            ...packageOptions,
+            name: '@some-org/zuul',
+            github: { owner: 'Some-Org' },
+          })
+      ).not.toThrow()
     })
 
     it('should default to node target when not specified', () => {
@@ -107,13 +145,13 @@ describe('Package', () => {
   describe('.isPrivate', () => {
     describe('when package has a scope', () => {
       it('should return true', () => {
-        const pkg = makePackage('@unallocate/foo')
+        const pkg = makePackage('@limulus/foo')
         expect(pkg.isPrivate).toBe(true)
       })
 
       describe('and is public', () => {
         it('should return false', () => {
-          const pkg = makePackage('@unallocate/foo', undefined, true)
+          const pkg = makePackage('@limulus/foo', undefined, true)
           expect(pkg.isPrivate).toBe(false)
         })
       })

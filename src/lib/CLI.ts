@@ -35,7 +35,8 @@ owner and repository in package.json come from the origin remote.
 Options:
   --target <target>  Set the module target (node or web) [default: node]
   --public           Publish a scoped package to npm publicly, MIT licensed
-                     [default: scoped packages go private to GitHub Packages]
+                     [default: scoped packages go private to GitHub Packages,
+                     and their scope must be the GitHub owner's]
   --owner <owner>    GitHub owner, for when there is no GitHub origin remote;
                      the repository is then named after the unscoped package name
   --author <author>  Author and copyright holder, as "Name <email> (url)"
@@ -46,7 +47,7 @@ Examples:
   create my-package "A description of my package"
   create my-package "A description of my package" --target web
   create @my-scope/my-package "A description of my package" --public
-  create @my-scope/my-package "A description" --owner my-org --author "Jane Doe"
+  create @my-org/my-package "A description" --owner my-org --author "Jane Doe"
 `
 
 const isPackageTarget = (value: unknown): value is PackageTarget =>

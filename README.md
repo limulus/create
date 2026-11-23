@@ -33,7 +33,7 @@ or without `.git`, or SSH). Without a GitHub `origin`, `create` stops with an er
 after the unscoped package name:
 
 ```sh
-npm init @unallocate @scope/pkgname 'A short description' --owner my-github-org
+npm init @unallocate @my-github-org/pkgname 'A short description' --owner my-github-org
 ```
 
 The author in `package.json`, who is also the copyright holder in a public package's
@@ -55,9 +55,11 @@ Available targets:
 - `web`: Uses ESNext modules with bundler resolution for web/browser projects
 
 Scoped packages are private by default: they publish to GitHub Packages, are marked
-`UNLICENSED`, and CI publishes with `GITHUB_TOKEN`. Pass `--public` to publish a scoped
-package to the npm registry with `access: public`, under the MIT license (a `LICENSE` file
-is generated), with CI publishing through npm's trusted publishing, so no npm token is
+`UNLICENSED`, and CI publishes with `GITHUB_TOKEN`. GitHub Packages accepts from a
+repository's own token only the scope named after the repository's owner, so `create` stops
+with an error when a private package's scope is anything else. Pass `--public` to publish a
+scoped package to the npm registry with `access: public`, under the MIT license (a `LICENSE`
+file is generated), with CI publishing through npm's trusted publishing, so no npm token is
 needed:
 
 ```sh

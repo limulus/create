@@ -68,7 +68,11 @@ describe('PackageInitializer', () => {
 
     it('should build GitHub URLs from the package’s GitHub owner and repository', async () => {
       const initializer = new PackageInitializer(
-        new Package({ ...packageOptions, github: { owner: 'some-org', repo: 'gozer' } })
+        new Package({
+          ...packageOptions,
+          name: '@some-org/zuul',
+          github: { owner: 'some-org', repo: 'gozer' },
+        })
       )
       await initializer.initialize(directory)
       const packageJson = readPackageJson(directory)
@@ -250,7 +254,7 @@ describe('PackageInitializer', () => {
     it('should apply node moduleConfig to tsconfig.base.json when target is node', async () => {
       const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
-        new Package({ ...packageOptions, name: '@test/pkg', target: 'node' })
+        new Package({ ...packageOptions, name: '@limulus/pkg', target: 'node' })
       )
       await initializer.initialize(directory)
       const tsConfig = fs.readFileSync(tsConfigDest).toString()
@@ -262,7 +266,7 @@ describe('PackageInitializer', () => {
     it('should apply web moduleConfig to tsconfig.base.json when target is web', async () => {
       const tsConfigDest = path.join(directory, 'tsconfig.base.json')
       const initializer = new PackageInitializer(
-        new Package({ ...packageOptions, name: '@test/pkg', target: 'web' })
+        new Package({ ...packageOptions, name: '@limulus/pkg', target: 'web' })
       )
       await initializer.initialize(directory)
       const tsConfig = fs.readFileSync(tsConfigDest).toString()
