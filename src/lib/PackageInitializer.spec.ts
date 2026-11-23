@@ -151,10 +151,14 @@ describe('PackageInitializer', () => {
         expect(readWorkflow(directory)).toContain('NPM_TOKEN: ${{ secrets.GITHUB_TOKEN }}')
       })
 
+      it('should grant the publish job what publishing to GitHub Packages takes', () => {
+        expect(readWorkflow(directory)).toMatch(
+          /\n {4}permissions:\n {6}contents: write\b.*\n {6}issues: write\b.*\n {6}pull-requests: write\b.*\n {6}packages: write\b.*\n {4}steps:\n/
+        )
+      })
+
       it('should not give the publish job trusted publishing permissions', () => {
-        const workflow = readWorkflow(directory)
-        expect(workflow).not.toContain('permissions:')
-        expect(workflow).not.toContain('id-token')
+        expect(readWorkflow(directory)).not.toContain('id-token')
       })
 
       it('should not create a LICENSE file', () => {

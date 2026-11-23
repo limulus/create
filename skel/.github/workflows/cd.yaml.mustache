@@ -41,6 +41,16 @@ jobs:
       pull-requests: write # comments on the pull requests a release includes
       id-token: write # the OIDC token npm exchanges for a publish token
 <</package.isPrivate>>
+<<#package.isPrivate>>
+    # This job publishes to GitHub Packages with the built-in GITHUB_TOKEN. Granting what
+    # that takes here keeps releases working where the repository's default token is
+    # read-only.
+    permissions:
+      contents: write # the tag and the GitHub release
+      issues: write # comments on the issues a release resolves
+      pull-requests: write # comments on the pull requests a release includes
+      packages: write # publishing to GitHub Packages
+<</package.isPrivate>>
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7

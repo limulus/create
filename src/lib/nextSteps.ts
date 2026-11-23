@@ -42,8 +42,7 @@ export const nextSteps = (pkg: Package, backlog: BootstrapOutcome): string[] => 
 
   const publishing = pkg.isPrivate
     ? 'No secrets to add: CI publishes to GitHub Packages with the built-in\n' +
-      "GITHUB_TOKEN, once the repository's default workflow permissions\n" +
-      'allow it.'
+      'GITHUB_TOKEN.'
     : 'No secrets to add, but npm must trust .github/workflows/cd.yaml before\n' +
       'the first release; until then nothing publishes. For the setup, see\n' +
       npmSetupUrl()
