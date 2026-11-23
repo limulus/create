@@ -7,15 +7,6 @@ before adding or changing items.
 
 Standing initiative. Keep it first, even when it has no items.
 
-## General availability as `@limulus/create`
-
-Make this a tool anyone can use, published as `@limulus/create`. Today it is
-`@unallocate/create`, published privately to GitHub Packages.
-
-- `∆vIB` Publish this tool as `@limulus/create`
-  - Rename it from `@unallocate/create`, move the repository to `limulus/create`, and
-    publish it publicly to npm through trusted publishing.
-
 ## Workspace template
 
 menschen and lemmon both became npm workspace monorepos, each set up by hand. Let `create`
